@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Font family tokens — reference CSS variables injected by next/font
+   ───────────────────────────────────────────────────────────────────────── */
+@theme inline {
+  --font-sans: var(--font-inter-var);
+  --font-clash: var(--font-clash-var);
+  --font-plex-thai: var(--font-plex-thai-var);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Colour tokens — strict duotone: white + near-black
+   (cobalt/rust map to ink so existing utilities stay valid)
+   ───────────────────────────────────────────────────────────────────────── */
+@theme {
+  --color-canvas: #fff;
+  --color-ink: #1a1a1a;
+  --color-cobalt: #1a1a1a;
+  --color-rust: #1a1a1a;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Base
+   ───────────────────────────────────────────────────────────────────────── */
+html {
+  /* Lenis controls smooth scroll; suppress the browser's native version */
+  scroll-behavior: auto;
+}
+
+body {
+  background-color: #fff;
+  color: #1a1a1a;
+  font-family: var(--font-inter-var, ui-sans-serif, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Scrollbar — thin, theme-matched */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(26, 26, 26, 0.3);
+  border-radius: 0;
+}
+
+/* Dark-section textarea scrollbar */
+[data-theme="dark"] textarea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Text selection */
+::selection {
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Custom cursor — hide native pointer on fine-pointer devices when active
+   ───────────────────────────────────────────────────────────────────────── */
+@media (pointer: fine) {
+  html.cursor-active,
+  html.cursor-active * {
+    cursor: none !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Marquee animation
+   The track (.marquee-track) contains two identical lists + equal spacers.
+   Shifting by -50 % moves exactly one list-width, then CSS resets to 0 —
+   creating a pixel-perfect circular loop with no jump.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marquee-left 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
