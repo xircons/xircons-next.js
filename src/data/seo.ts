@@ -4,25 +4,25 @@ export const siteSeo = {
   title: 'Xircons — Web Developer',
   shortTitle: 'Xircons',
   description:
-    'Wuttikan (Xircons) — web developer and DII student at Chiang Mai University. Frontend with React, Next.js, Framer Motion, full-stack projects, and UI craft.',
+    'Portfolio of Wuttikan, a DII student at Chiang Mai University specializing in Full-stack Web Development.',
   ogDescription:
-    'Portfolio of Wuttikan (Xircons): web development, motion, and full-stack work from Chiang Mai, Thailand.',
+    'Portfolio of Wuttikan (Xircons): DII student at Chiang Mai University, full-stack web development.',
   keywords: [
-    'Xircons',
     'Wuttikan',
+    'Xircons',
+    'full-stack web development',
+    'full-stack',
     'web developer',
+    'Chiang Mai',
+    'Chiang Mai University',
     'Next.js',
     'React',
-    'Framer Motion',
-    'Chiang Mai University',
     'portfolio',
-    'frontend',
-    'Thailand',
   ],
   person: {
     name: 'Wuttikan',
     alternateName: 'Xircons',
-    jobTitle: 'Web developer',
+    jobTitle: 'Full-stack Web Developer',
     email: 'wutthikan_s@cmu.ac.th',
   },
   organization: {

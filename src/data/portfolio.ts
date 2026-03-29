@@ -6,7 +6,7 @@ export const portfolioData: PortfolioContent = {
   about: {
     title: "HELLO! I'M XIRCONS",
     description:
-      'Sawaddeekub, I am Wuttikan, a DII student at Chiang Mai University with a passion for web design and development. Explore my repositories to see what I’ve been working on.',
+      'Sawaddeekub, I am Wuttikan, a web developer and DII student at Chiang Mai University in Chiang Mai, Thailand, focusing on full-stack web development and design. Explore my repositories to see what I’ve been working on.',
   },
   works: [
     {

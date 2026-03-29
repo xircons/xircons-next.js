@@ -1,6 +1,6 @@
 /**
  * Canonical site origin without trailing slash.
- * Set `NEXT_PUBLIC_SITE_URL` in production (e.g. https://xircons.com).
+ * Set `NEXT_PUBLIC_SITE_URL` in production (e.g. https://xircons.website — no www, no trailing slash).
  */
 export function getSiteUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim()

@@ -21,7 +21,10 @@ export default function Hero() {
 
         {/* ── Main headline (single h1, three lines) ───────────────── */}
         <div className="flex min-h-0 flex-1 flex-col justify-center px-4 lg:px-8">
-          <motion.h1 className="m-0 w-full font-clash text-[clamp(4.5rem,12.5vw,14rem)] font-700 leading-none tracking-[-0.03em] text-ink">
+          <motion.h1
+            aria-label="Crafting digital experiences."
+            className="m-0 w-full font-clash text-[clamp(4.5rem,12.5vw,14rem)] font-700 leading-none tracking-[-0.03em] text-ink"
+          >
             <div className="overflow-hidden">
               <motion.span
                 variants={reduced ? {} : clipReveal}
