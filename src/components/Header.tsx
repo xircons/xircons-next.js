@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { useLenis } from '@/components/SmoothScrollProvider'
 import { getArrowMorphTransition } from '@/lib/motion'
 
@@ -15,7 +16,7 @@ const NAV_LINKS = [
 const CONTACT_EASE = [0.22, 1, 0.36, 1] as const
 const CONTACT_T = { duration: 0.4, ease: CONTACT_EASE }
 
-/** Mailto CTA — same L→R underline + ↗→→ as footer socials; colours follow header dark mode. */
+/** Mailto CTA — same L→R underline + ArrowUpRight → ArrowRight morph as footer socials. */
 function HeaderMailLink({ href, dark }: { href: string; dark: boolean }) {
   const [hovered, setHovered] = useState(false)
   const reduced = useReducedMotion()
@@ -46,10 +47,10 @@ function HeaderMailLink({ href, dark }: { href: string; dark: boolean }) {
           transition={arrowT}
           aria-hidden="true"
         >
-          {/* ↗ */}
+          <ArrowUpRight className="size-full" strokeWidth={2} aria-hidden />
         </motion.span>
         <motion.span
-          className="absolute inset-0 flex items-center justify-center text-[0.72em] will-change-transform"
+          className="absolute inset-0 flex items-center justify-center will-change-transform"
           initial={false}
           animate={{
             opacity: hovered ? 1 : 0,
@@ -59,7 +60,7 @@ function HeaderMailLink({ href, dark }: { href: string; dark: boolean }) {
           transition={arrowT}
           aria-hidden="true"
         >
-          →
+          <ArrowRight className="size-[72%]" strokeWidth={2} aria-hidden />
         </motion.span>
       </span>
       <motion.span

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { useLenis } from '@/components/SmoothScrollProvider'
 
 const NAV = [
@@ -34,7 +35,7 @@ const BRACKET_EASE = { duration: 0.3, ease: 'easeInOut' as const }
 const SOCIAL_EASE = [0.22, 1, 0.36, 1] as const
 const SOCIAL_T = { duration: 0.4, ease: SOCIAL_EASE }
 
-/** External social — L→R underline draw + ↗ crossfades to → on hover. */
+/** External social — L→R underline draw + ArrowUpRight crossfades to ArrowRight on hover. */
 function FooterSocialLink({ label, href }: { label: string; href: string }) {
   const [hovered, setHovered] = useState(false)
   const reduced = useReducedMotion()
@@ -61,10 +62,10 @@ function FooterSocialLink({ label, href }: { label: string; href: string }) {
           transition={t}
           aria-hidden="true"
         >
-          ↗
+          <ArrowUpRight className="size-full" strokeWidth={2} aria-hidden />
         </motion.span>
         <motion.span
-          className="absolute inset-0 flex items-center justify-center text-[0.72em]"
+          className="absolute inset-0 flex items-center justify-center"
           initial={false}
           animate={{
             opacity: hovered ? 1 : 0,
@@ -73,7 +74,7 @@ function FooterSocialLink({ label, href }: { label: string; href: string }) {
           transition={t}
           aria-hidden="true"
         >
-          →
+          <ArrowRight className="size-[72%]" strokeWidth={2} aria-hidden />
         </motion.span>
       </span>
       {/* Underline draws L→R on hover, retracts on leave */}
@@ -195,23 +196,50 @@ function formatClock24h(timeZone: string, date: Date): string {
   })
 }
 
-function buildClockLine(date: Date): string {
+function buildClockParts(date: Date): {
+  line: string
+  location: string
+  offset: string
+  time: string
+} {
   const { locationLabel, timeZone } = FOOTER_CLOCK
-  const off = timeZoneOffsetLabel(timeZone, date)
-  const hm = formatClock24h(timeZone, date)
-  return `${locationLabel}: (${off}) ${hm}`
+  const offset = timeZoneOffsetLabel(timeZone, date)
+  const time = formatClock24h(timeZone, date)
+  return {
+    line: `${locationLabel}: (${offset}) ${time}`,
+    location: locationLabel,
+    offset,
+    time,
+  }
 }
+
+const FOOTER_CLOCK_PLACEHOLDER = {
+  line: `${FOOTER_CLOCK.locationLabel}: (--:--)`,
+  location: FOOTER_CLOCK.locationLabel,
+  offset: 'GMT+7',
+  time: '--:--',
+} as const
 
 /**
  * Live-updating footer clock: correct TZ offset via Intl, ticks every second,
  * resyncs when the tab becomes visible again (browser throttles background tabs).
  * Placeholder until mount avoids SSR/client Intl or clock skew hydration mismatches.
  */
-function useFooterClockLine(): string {
-  const [line, setLine] = useState('')
+function useFooterClock(): {
+  line: string
+  location: string
+  offset: string
+  time: string
+} {
+  const [parts, setParts] = useState<{
+    line: string
+    location: string
+    offset: string
+    time: string
+  } | null>(null)
 
   useEffect(() => {
-    const tick = () => setLine(buildClockLine(new Date()))
+    const tick = () => setParts(buildClockParts(new Date()))
 
     tick()
     const id = window.setInterval(tick, 1000)
@@ -227,11 +255,11 @@ function useFooterClockLine(): string {
     }
   }, [])
 
-  return line || `${FOOTER_CLOCK.locationLabel}: (--:--)`
+  return parts ?? { ...FOOTER_CLOCK_PLACEHOLDER }
 }
 
 export default function Footer() {
-  const clockLine = useFooterClockLine()
+  const clock = useFooterClock()
   const year = new Date().getFullYear()
 
   return (
@@ -247,7 +275,7 @@ export default function Footer() {
 
         <div className="mx-auto h-px max-w-[calc(100%-2.5rem)] bg-ink/10" aria-hidden="true" />
 
-        <div className="flex flex-col items-center px-5 py-10 text-center">
+        <div className="flex flex-col items-center gap-3 px-5 py-12 text-center">
           <a
             href="tel:+66933199416"
             className="font-clash font-700 leading-tight tracking-[-0.02em] text-ink transition-opacity hover:opacity-60"
@@ -257,7 +285,7 @@ export default function Footer() {
           </a>
           <a
             href="mailto:wutthikan_s@cmu.ac.th"
-            className="mt-1 font-clash font-700 leading-tight tracking-[-0.02em] text-ink transition-opacity hover:opacity-60 break-all"
+            className="max-w-full font-clash font-700 leading-tight tracking-[-0.02em] text-ink transition-opacity hover:opacity-60 break-all"
             style={{ fontSize: 'clamp(1rem, 3.8vw, 1.35rem)' }}
           >
             wutthikan_s@cmu.ac.th
@@ -266,19 +294,34 @@ export default function Footer() {
 
         <div className="mx-auto h-px max-w-[calc(100%-2.5rem)] bg-ink/10" aria-hidden="true" />
 
-        <div className="flex items-end justify-between gap-4 px-5 py-6 pb-10">
-          <div className="min-w-0 flex-1 font-mono text-ink" style={{ fontSize: '10px', opacity: 0.45 }}>
-            <p className="leading-relaxed">© {year} All Rights Reserved.</p>
-            <p className="mt-0.5 leading-relaxed">XIRCONS</p>
-            <p className="mt-2 max-w-[14rem] uppercase tabular-nums leading-relaxed tracking-[0.08em]">
-              {clockLine}
-            </p>
+        <div
+          className="px-5 pt-8"
+          style={{
+            paddingBottom: 'max(2.75rem, calc(env(safe-area-inset-bottom, 0px) + 2.25rem))',
+          }}
+        >
+          <div
+            className="flex w-full items-start justify-between gap-4 font-mono text-ink"
+            style={{
+              fontSize: 'clamp(10px, 3.1vw, 12px)',
+              opacity: 0.52,
+            }}
+          >
+            <div
+              className="min-w-0 flex-1 text-left uppercase leading-[1.6] tracking-[0.07em]"
+              aria-label={clock.line}
+            >
+              <p className="text-balance">{clock.location}</p>
+              <p className="mt-1.5 tabular-nums tracking-[0.06em]">
+                <span className="opacity-90">({clock.offset})</span>{' '}
+                <span className="font-500 opacity-100">{clock.time}</span>
+              </p>
+            </div>
+            <div className="ml-1 shrink-0 text-right sm:ml-2">
+              <p className="leading-[1.65]">© {year} All Rights Reserved.</p>
+              <p className="mt-2 font-500 leading-[1.65] tracking-[0.04em]">XIRCONS</p>
+            </div>
           </div>
-          <p className="shrink-0 text-right font-sans text-[11px] font-700 uppercase leading-tight tracking-[0.18em] text-ink">
-            WEB
-            <br />
-            DEV
-          </p>
         </div>
       </div>
 
@@ -366,7 +409,7 @@ export default function Footer() {
             className="font-mono uppercase text-ink tabular-nums"
             style={{ fontSize: '11px', letterSpacing: '0.12em', opacity: 0.5 }}
           >
-            {clockLine}
+            {clock.line}
           </p>
           <p
             className="text-right font-mono leading-relaxed text-ink"

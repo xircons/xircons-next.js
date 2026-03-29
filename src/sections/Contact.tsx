@@ -8,6 +8,7 @@ import {
   useReducedMotion,
   type MotionValue,
 } from 'framer-motion'
+import { ArrowRight } from 'lucide-react'
 import { submitContact, type ContactFormState } from '@/app/actions/contact'
 import { useToasts, ToastContainer } from '@/components/Toast'
 
@@ -47,6 +48,54 @@ function MaskedLetter({
   )
 }
 
+/** One headline line: flex-wrap breaks between words only (letters stay inside each word). */
+function ContactHeadlineLine({
+  line,
+  ariaLabel,
+  indexStart,
+  scrollYProgress,
+  reduced,
+}: {
+  line: string
+  ariaLabel: string
+  indexStart: number
+  scrollYProgress: MotionValue<number>
+  reduced: boolean
+}) {
+  const words = line.split(' ')
+  let idx = indexStart
+
+  return (
+    <h2
+      aria-label={ariaLabel}
+      className="inline-flex max-w-full flex-wrap items-baseline justify-center font-clash font-700 leading-[0.9] tracking-[-0.03em] text-canvas text-[clamp(1.65rem,5.5vw+0.75rem,3rem)] md:text-[clamp(2.35rem,7.5vw,5.5rem)] lg:text-[clamp(3.5rem,11vw,10rem)]"
+    >
+      {words.map((word, wi) => (
+        <span key={wi} className="inline-flex flex-nowrap">
+          {wi > 0 ? (
+            <MaskedLetter
+              key={`sp-${wi}`}
+              char=" "
+              index={idx++}
+              scrollYProgress={scrollYProgress}
+              reduced={reduced}
+            />
+          ) : null}
+          {word.split('').map((char, i) => (
+            <MaskedLetter
+              key={`${wi}-${i}`}
+              char={char}
+              index={idx++}
+              scrollYProgress={scrollYProgress}
+              reduced={reduced}
+            />
+          ))}
+        </span>
+      ))}
+    </h2>
+  )
+}
+
 
 const INPUT_STYLE = {
   borderBottom: '1px solid rgba(255,255,255,0.35)',
@@ -78,9 +127,7 @@ export default function Contact() {
     if (state.fieldErrors?.message?.[0]) push(state.fieldErrors.message[0])
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const line1Letters = LINE_1.split('')
-  const line2Letters = LINE_2.split('')
-  const line2Offset = LINE_1.length + 1
+  const line2IndexStart = LINE_1.length + 1
 
   return (
     <>
@@ -100,21 +147,13 @@ export default function Contact() {
           LET&apos;S START THE CONVERSATION
         </p>
 
-        <h2
-          aria-label={LINE_1}
-          className="inline-flex max-w-full flex-wrap justify-center font-clash font-700 leading-[0.9] tracking-[-0.03em] text-canvas"
-          style={{ fontSize: 'clamp(3.5rem, 11vw, 10rem)' }}
-        >
-          {line1Letters.map((char, i) => (
-            <MaskedLetter
-              key={i}
-              char={char}
-              index={i}
-              scrollYProgress={scrollYProgress}
-              reduced={reduced}
-            />
-          ))}
-        </h2>
+        <ContactHeadlineLine
+          line={LINE_1}
+          ariaLabel={LINE_1}
+          indexStart={0}
+          scrollYProgress={scrollYProgress}
+          reduced={reduced}
+        />
 
         <p
           className="font-mono uppercase"
@@ -123,21 +162,13 @@ export default function Contact() {
           STARTS WITH
         </p>
 
-        <h2
-          aria-label={LINE_2}
-          className="inline-flex max-w-full flex-wrap justify-center font-clash font-700 leading-[0.9] tracking-[-0.03em] text-canvas"
-          style={{ fontSize: 'clamp(3.5rem, 11vw, 10rem)' }}
-        >
-          {line2Letters.map((char, i) => (
-            <MaskedLetter
-              key={i}
-              char={char}
-              index={line2Offset + i}
-              scrollYProgress={scrollYProgress}
-              reduced={reduced}
-            />
-          ))}
-        </h2>
+        <ContactHeadlineLine
+          line={LINE_2}
+          ariaLabel={LINE_2}
+          indexStart={line2IndexStart}
+          scrollYProgress={scrollYProgress}
+          reduced={reduced}
+        />
       </div>
 
       {/* ── Form ────────────────────────────────────────────── */}
@@ -232,7 +263,7 @@ export default function Contact() {
                 }}
                 whileTap={isPending ? {} : { scale: 0.99 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full flex items-center justify-between font-clash font-700 uppercase disabled:cursor-not-allowed disabled:opacity-40"
+                className="w-full cursor-pointer flex items-center justify-between font-clash font-700 uppercase disabled:cursor-not-allowed disabled:opacity-40"
                 style={{
                   fontSize: 'clamp(0.8rem, 1.2vw, 1.2rem)',
                   letterSpacing: '0.08em',
@@ -241,7 +272,13 @@ export default function Contact() {
                 }}
               >
                 <span>{isPending ? 'SENDING…' : 'SEND MESSAGE'}</span>
-                <span>{isPending ? '' : '→'}</span>
+                {!isPending && (
+                  <ArrowRight
+                    className="size-[1.1em] shrink-0"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                )}
               </motion.button>
             </div>
           </form>

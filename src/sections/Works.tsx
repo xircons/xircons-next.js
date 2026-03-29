@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { getArrowMorphTransition, staggerContainer, fadeUp } from '@/lib/motion'
 import type { PortfolioProject } from '@/types/portfolio'
 
@@ -67,10 +68,10 @@ function ProjectCard({ project, index }: { project: PortfolioProject; index: num
         ))}
       </div>
 
-      {/* Corner arrows: ↗ default, crossfade to → on hover */}
+      {/* Corner arrows: ArrowUpRight default, crossfade to ArrowRight on hover */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-8 top-8 flex h-8 w-8 items-center justify-center font-clash text-xl leading-none transform-gpu"
+        className="pointer-events-none absolute right-8 top-8 flex h-8 w-8 items-center justify-center transform-gpu"
       >
         <motion.span
           className="absolute inset-0 flex items-center justify-center will-change-transform"
@@ -83,10 +84,10 @@ function ProjectCard({ project, index }: { project: PortfolioProject; index: num
           }}
           transition={arrowTransition}
         >
-          ↗
+          <ArrowUpRight className="size-5" strokeWidth={2} aria-hidden />
         </motion.span>
         <motion.span
-          className="absolute inset-0 flex items-center justify-center text-[0.72em] will-change-transform"
+          className="absolute inset-0 flex items-center justify-center will-change-transform"
           initial={false}
           animate={{
             opacity: hovered ? 1 : 0,
@@ -95,7 +96,7 @@ function ProjectCard({ project, index }: { project: PortfolioProject; index: num
           }}
           transition={arrowTransition}
         >
-          →
+          <ArrowRight className="size-[1.125rem]" strokeWidth={2} aria-hidden />
         </motion.span>
       </div>
       </motion.article>

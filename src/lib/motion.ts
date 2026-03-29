@@ -48,7 +48,7 @@ export const clipReveal: Variants = {
   },
 }
 
-/** Softer crossfade for ↗ ↔ → (Works cards, header mail CTA, etc.) */
+/** Softer crossfade for ArrowUpRight ↔ ArrowRight (Works cards, header mail CTA, etc.) */
 export const ARROW_MORPH_EASE = [0.33, 1, 0.68, 1] as const
 
 export function getArrowMorphTransition(reducedMotion: boolean) {
