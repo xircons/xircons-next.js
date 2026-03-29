@@ -1,5 +1,10 @@
 'use server'
 
+import {
+  buildContactEmailHtml,
+  buildContactEmailPlainText,
+} from '@/lib/contactEmailTemplate'
+import { Resend } from 'resend'
 import { z } from 'zod'
 
 const ContactSchema = z.object({
@@ -27,13 +32,14 @@ export type ContactFormState = {
   fieldErrors?: Partial<Record<'name' | 'email' | 'message', string[]>>
 }
 
+const SEND_FAILED =
+  'Could not send your message. Please try again in a few minutes.'
+const NOT_CONFIGURED =
+  'Contact form is temporarily unavailable. Please try again later.'
+
 /**
- * Validates and (in production) dispatches a contact form submission.
- * Returns a structured result — never throws unhandled errors.
- *
- * Swap the TODO comment for a real transactional email call (Resend,
- * SendGrid, etc.) using environment variables only, never exposing keys
- * to the client.
+ * Validates and sends contact submissions via Resend (server-only env).
+ * Never throws; never exposes API details to the client.
  */
 export async function submitContact(
   _prev: ContactFormState,
@@ -56,11 +62,41 @@ export async function submitContact(
     }
   }
 
-  // TODO: swap for real email delivery
-  // await resend.emails.send({ from: '...', to: '...', ...parsed.data })
+  const apiKey = process.env.RESEND_API_KEY?.trim()
+  const from = process.env.CONTACT_FROM_EMAIL?.trim()
+  const to = process.env.CONTACT_TO_EMAIL?.trim()
 
-  // Simulate async work without leaking internal data
-  await new Promise((resolve) => setTimeout(resolve, 600))
+  if (!apiKey || !from || !to) {
+    console.error('[contact] Missing RESEND_API_KEY, CONTACT_FROM_EMAIL, or CONTACT_TO_EMAIL')
+    return { ok: false, error: NOT_CONFIGURED }
+  }
 
-  return { ok: true }
+  const { name, phone, email, message } = parsed.data
+  const phoneLine = phone && phone.length > 0 ? phone : '(none)'
+
+  const payload = { name, phoneLine, email, message }
+  const text = buildContactEmailPlainText(payload)
+  const html = buildContactEmailHtml(payload)
+
+  try {
+    const resend = new Resend(apiKey)
+    const { error } = await resend.emails.send({
+      from,
+      to,
+      replyTo: email,
+      subject: `[xircons.website] Message from ${name}`,
+      text,
+      html,
+    })
+
+    if (error) {
+      console.error('[contact] Resend error:', error.name, error.message)
+      return { ok: false, error: SEND_FAILED }
+    }
+
+    return { ok: true }
+  } catch (e) {
+    console.error('[contact] Send failed:', e)
+    return { ok: false, error: SEND_FAILED }
+  }
 }
