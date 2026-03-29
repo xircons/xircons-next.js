@@ -4,6 +4,9 @@ import localFont from 'next/font/local'
 import './globals.css'
 import SmoothScrollProvider from '@/components/SmoothScrollProvider'
 import CustomCursor from '@/components/CustomCursor'
+import StructuredData from '@/components/StructuredData'
+import { getMetadataBase, getSiteUrl } from '@/lib/site'
+import { siteSeo } from '@/data/seo'
 
 const inter = Inter({
   variable: '--font-inter-var',
@@ -29,15 +32,37 @@ const clashDisplay = localFont({
   display: 'swap',
 })
 
+const siteUrl = getSiteUrl()
+const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim()
+
 export const metadata: Metadata = {
-  title: 'Xircons — Web Developer',
-  description:
-    'Developer specializing in crafting elegant, performant, and accessible user interfaces with React, Next.js, and Framer Motion.',
+  metadataBase: getMetadataBase(),
+  title: {
+    default: siteSeo.title,
+    template: `%s · ${siteSeo.shortTitle}`,
+  },
+  description: siteSeo.description,
+  keywords: [...siteSeo.keywords],
+  authors: [{ name: siteSeo.person.name, url: siteUrl }],
+  creator: siteSeo.person.name,
+  robots: { index: true, follow: true },
+  alternates: { canonical: '/' },
   openGraph: {
-    title: 'Xircons — Web Developer',
-    description: 'Crafting elegant, performant UIs.',
+    title: siteSeo.title,
+    description: siteSeo.ogDescription,
+    url: siteUrl,
+    siteName: siteSeo.siteName,
+    locale: 'en_US',
     type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteSeo.title,
+    description: siteSeo.ogDescription,
+  },
+  ...(googleVerification
+    ? { verification: { google: googleVerification } }
+    : {}),
 }
 
 export default function RootLayout({
@@ -49,6 +74,7 @@ export default function RootLayout({
       className={`${inter.variable} ${ibmPlexSansThai.variable} ${clashDisplay.variable} h-full`}
     >
       <body className="min-h-full">
+        <StructuredData />
         <SmoothScrollProvider>
           {children}
         </SmoothScrollProvider>

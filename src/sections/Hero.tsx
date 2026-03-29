@@ -19,32 +19,34 @@ export default function Hero() {
         animate="show"
       >
 
-        {/* ── Main headline ─────────────────────────────────────────── */}
+        {/* ── Main headline (single h1, three lines) ───────────────── */}
         <div className="flex min-h-0 flex-1 flex-col justify-center px-4 lg:px-8">
-          <div className="overflow-hidden">
-            <motion.h1
-              variants={reduced ? {} : clipReveal}
-              className="w-full font-clash text-[clamp(4.5rem,12.5vw,14rem)] font-700 leading-none tracking-[-0.03em] text-ink"
-            >
-              CRAFTING
-            </motion.h1>
-          </div>
-          <div className="overflow-hidden">
-            <motion.span
-              variants={reduced ? {} : clipReveal}
-              className="block w-full font-clash text-[clamp(4.5rem,12.5vw,14rem)] font-700 leading-none tracking-[-0.03em] text-ink"
-            >
-              DIGITAL
-            </motion.span>
-          </div>
-          <div className="overflow-hidden">
-            <motion.span
-              variants={reduced ? {} : clipReveal}
-              className="block w-full font-clash text-[clamp(4.5rem,12.5vw,14rem)] font-700 leading-none tracking-[-0.03em] text-ink"
-            >
-              EXPERIENCES.
-            </motion.span>
-          </div>
+          <motion.h1 className="m-0 w-full font-clash text-[clamp(4.5rem,12.5vw,14rem)] font-700 leading-none tracking-[-0.03em] text-ink">
+            <div className="overflow-hidden">
+              <motion.span
+                variants={reduced ? {} : clipReveal}
+                className="block w-full"
+              >
+                CRAFTING
+              </motion.span>
+            </div>
+            <div className="overflow-hidden">
+              <motion.span
+                variants={reduced ? {} : clipReveal}
+                className="block w-full"
+              >
+                DIGITAL
+              </motion.span>
+            </div>
+            <div className="overflow-hidden">
+              <motion.span
+                variants={reduced ? {} : clipReveal}
+                className="block w-full"
+              >
+                EXPERIENCES.
+              </motion.span>
+            </div>
+          </motion.h1>
         </div>
 
         <div className="relative isolate shrink-0">
