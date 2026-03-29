@@ -37,6 +37,54 @@ const SEND_FAILED =
 const NOT_CONFIGURED =
   'Contact form is temporarily unavailable. Please try again later.'
 
+function sanitizeSubjectName(name: string): string {
+  return name
+    .replace(/[\r\n\u0000-\u001F\u007F]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 80)
+}
+
+function parseToRecipients(raw: string): string[] {
+  return raw
+    .split(/[,;]/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+}
+
+type ResendErr = { name: string; message: string; statusCode: number | null }
+
+function userFacingResendError(err: ResendErr): string {
+  const dev = process.env.NODE_ENV === 'development'
+  const suffix = dev && err.message ? ` — ${err.message}` : ''
+
+  switch (err.name) {
+    case 'invalid_from_address':
+      return (
+        'This site cannot send mail yet: the sender address is not verified in Resend. ' +
+        'Verify your domain and set CONTACT_FROM_EMAIL to an address on that domain.' +
+        suffix
+      )
+    case 'invalid_api_key':
+    case 'restricted_api_key':
+    case 'missing_api_key':
+      return 'Email service is misconfigured (API key). Please contact the site owner.' + suffix
+    case 'validation_error':
+    case 'missing_required_field':
+    case 'invalid_parameter':
+      return (
+        'The message could not be accepted by the email service. Check environment variables (from/to) and try again.' +
+        suffix
+      )
+    case 'rate_limit_exceeded':
+    case 'daily_quota_exceeded':
+    case 'monthly_quota_exceeded':
+      return 'Too many messages were sent recently. Please try again later.' + suffix
+    default:
+      return SEND_FAILED + suffix
+  }
+}
+
 /**
  * Validates and sends contact submissions via Resend (server-only env).
  * Never throws; never exposes API details to the client.
@@ -77,26 +125,48 @@ export async function submitContact(
   const payload = { name, phoneLine, email, message }
   const text = buildContactEmailPlainText(payload)
   const html = buildContactEmailHtml(payload)
+  const subjectName = sanitizeSubjectName(name)
+  const toList = parseToRecipients(to)
+  if (toList.length === 0) {
+    console.error('[contact] CONTACT_TO_EMAIL has no valid addresses')
+    return { ok: false, error: NOT_CONFIGURED }
+  }
 
   try {
     const resend = new Resend(apiKey)
-    const { error } = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from,
-      to,
+      to: toList.length === 1 ? toList[0]! : toList,
       replyTo: email,
-      subject: `[xircons.website] Message from ${name}`,
+      subject: `[xircons.website] Message from ${subjectName}`,
       text,
       html,
     })
 
     if (error) {
-      console.error('[contact] Resend error:', error.name, error.message)
+      console.error(
+        '[contact] Resend error:',
+        error.name,
+        error.message,
+        error.statusCode,
+      )
+      return { ok: false, error: userFacingResendError(error) }
+    }
+
+    if (!data?.id) {
+      console.error('[contact] Resend returned no email id', { data })
       return { ok: false, error: SEND_FAILED }
     }
 
+    console.info('[contact] Resend accepted:', data.id, '→', toList.join(', '))
     return { ok: true }
   } catch (e) {
     console.error('[contact] Send failed:', e)
-    return { ok: false, error: SEND_FAILED }
+    const dev = process.env.NODE_ENV === 'development'
+    const hint =
+      dev && e instanceof Error && e.message
+        ? `${SEND_FAILED} — ${e.message}`
+        : SEND_FAILED
+    return { ok: false, error: hint }
   }
 }
