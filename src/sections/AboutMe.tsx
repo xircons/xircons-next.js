@@ -48,35 +48,45 @@ export default function AboutMe({ data }: Props) {
         animate={inView ? { y: 0 } : undefined}
         transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        {/* ── Massive scramble heading ──── */}
-        <h2
-          aria-hidden="true"
-          className="mb-12 w-full font-clash text-[clamp(3.5rem,10vw,11rem)] font-700 leading-none tracking-tighter text-canvas"
-        >
-          {scrambledTitle}
-        </h2>
-
-        {/* ── Two-column body ──────────────────────────────────────── */}
-        <div className="grid gap-12 lg:grid-cols-[1fr_auto]">
-          <p
-            aria-hidden="true"
-            className="max-w-2xl font-mono text-sm leading-relaxed tracking-wide text-canvas"
-          >
-            {scrambledDesc}
-          </p>
-
-          <ul role="list" className="flex flex-col gap-2 text-left lg:text-right">
-            {EXPERIENCE_ITEMS.map((item) => (
-              <li
-                key={item}
-                className="font-sans text-xs font-500 uppercase tracking-[0.2em] text-canvas"
+        <div className="grid gap-10 pb-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-stretch lg:gap-x-12 lg:gap-y-0 lg:pb-24 xl:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
+          {/* Left column: title + copy top, experience lines bottom-left (same band as photo) */}
+          <div className="flex min-h-0 min-w-0 flex-col gap-8 lg:h-full lg:justify-between lg:gap-0">
+            <div className="flex flex-col gap-8 lg:gap-10">
+              <h2
+                aria-hidden="true"
+                className="w-full font-clash text-[clamp(2.75rem,7vw,8.25rem)] font-700 leading-[0.95] tracking-tighter text-canvas xl:text-[clamp(2.75rem,6.5vw,7.75rem)]"
               >
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
+                {scrambledTitle}
+              </h2>
+              <p
+                aria-hidden="true"
+                className="max-w-2xl font-mono text-sm leading-relaxed tracking-wide text-canvas"
+              >
+                {scrambledDesc}
+              </p>
+            </div>
+            <ul role="list" className="hidden shrink-0 flex-col gap-2 text-left lg:flex">
+              {EXPERIENCE_ITEMS.map((item) => (
+                <li
+                  key={item}
+                  className="font-sans text-xs font-500 uppercase tracking-[0.2em] text-canvas"
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
 
+          {/* Right column: photo (bottom-aligned with left-column caption) */}
+          <div className="flex h-full min-h-0 items-end justify-center lg:justify-end lg:pt-1">
+            <img
+              src="/___________________copykub.jpg"
+              alt=""
+              aria-hidden
+              className="pointer-events-none aspect-[3/4] w-full max-w-[min(100%,20rem)] object-cover grayscale sm:max-w-[22rem] lg:max-w-none"
+            />
+          </div>
+        </div>
       </motion.div>
     </section>
   )

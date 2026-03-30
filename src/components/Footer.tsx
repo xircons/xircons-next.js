@@ -263,7 +263,7 @@ export default function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer role="contentinfo" style={{ background: '#f2f2f2', color: '#1a1a1a' }}>
+    <footer role="contentinfo" style={{ background: '#ffffff', color: '#1a1a1a' }}>
 
       {/* ── MOBILE (<lg) — bracket externals → centered contact → meta ── */}
       <div className="lg:hidden">
@@ -273,7 +273,7 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mx-auto h-px max-w-[calc(100%-2.5rem)] bg-ink/10" aria-hidden="true" />
+        {/* <div className="mx-auto h-px max-w-[calc(100%-2.5rem)] bg-ink/10" aria-hidden="true" /> */}
 
         <div className="flex flex-col items-center gap-3 px-5 py-12 text-center">
           <a

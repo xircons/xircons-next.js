@@ -1,4 +1,5 @@
 import Header from '@/components/Header'
+import HomeSectionScroll from '@/components/HomeSectionScroll'
 import Footer from '@/components/Footer'
 import Hero from '@/sections/Hero'
 import AboutMe from '@/sections/AboutMe'
@@ -18,6 +19,7 @@ export default function PortfolioPage() {
   return (
     <main id="main-content" className="overflow-x-hidden">
       <Header />
+      <HomeSectionScroll />
 
       {/* ── 100dvh sections ─────────────────────────── */}
       <Hero />
