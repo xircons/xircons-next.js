@@ -1,16 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { useLenis } from '@/components/SmoothScrollProvider'
 import { getArrowMorphTransition } from '@/lib/motion'
 
 const NAV_LINKS = [
-  { label: 'ABOUT ME', href: '#about' },
-  { label: 'WORKS', href: '#works' },
-  { label: 'SKILLS', href: '#skills' },
-  { label: 'CONNECT', href: '#contact' },
+  { label: 'ABOUT ME', hash: 'about' as const },
+  { label: 'WORKS', hash: 'works' as const },
+  { label: 'SKILLS', hash: 'skills' as const },
+  { label: 'CONNECT', hash: 'contact' as const },
 ]
 
 const CONTACT_EASE = [0.22, 1, 0.36, 1] as const
@@ -79,15 +81,18 @@ function HeaderMailLink({ href, dark }: { href: string; dark: boolean }) {
  */
 function NavLink({
   label,
-  href,
+  hash,
   dark,
+  isHome,
 }: {
   label: string
-  href: string
+  hash: string
   dark: boolean
+  isHome: boolean
 }) {
   const [hovered, setHovered] = useState(false)
   const { scrollTo } = useLenis()
+  const href = `#${hash}`
 
   const slide   = { rest: { y: '0%' },    hover: { y: '100%' }  }
   const slideIn = { rest: { y: '-100%' }, hover: { y: '0%' }    }
@@ -96,38 +101,63 @@ function NavLink({
   const color = dark ? 'text-canvas' : 'text-ink'
   const outline = dark ? 'focus-visible:outline-canvas' : 'focus-visible:outline-ink'
 
+  const commonClass = `relative block overflow-hidden font-sans text-xs font-500 tracking-[0.15em] focus-visible:rounded focus-visible:outline-2 transition-colors duration-300 ${color} ${outline}`
+
+  const inner = (
+    <>
+      <motion.span
+        aria-hidden="true"
+        className="block"
+        animate={hovered ? slide.hover : slide.rest}
+        transition={transition}
+      >
+        [ {label} ]
+      </motion.span>
+      <motion.span
+        aria-hidden="true"
+        className="absolute inset-0 block"
+        animate={hovered ? slideIn.hover : slideIn.rest}
+        transition={transition}
+      >
+        [ {label} ]
+      </motion.span>
+      <span className="sr-only">{label}</span>
+    </>
+  )
+
   return (
     <li>
-      <a
-        href={href}
-        onClick={(e) => { e.preventDefault(); scrollTo(href) }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className={`relative block overflow-hidden font-sans text-xs font-500 tracking-[0.15em] focus-visible:rounded focus-visible:outline-2 transition-colors duration-300 ${color} ${outline}`}
-      >
-        <motion.span
-          aria-hidden="true"
-          className="block"
-          animate={hovered ? slide.hover : slide.rest}
-          transition={transition}
+      {isHome ? (
+        <a
+          href={href}
+          onClick={(e) => {
+            e.preventDefault()
+            scrollTo(href)
+          }}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className={commonClass}
         >
-          [ {label} ]
-        </motion.span>
-        <motion.span
-          aria-hidden="true"
-          className="absolute inset-0 block"
-          animate={hovered ? slideIn.hover : slideIn.rest}
-          transition={transition}
+          {inner}
+        </a>
+      ) : (
+        <Link
+          href={`/#${hash}`}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className={commonClass}
         >
-          [ {label} ]
-        </motion.span>
-        <span className="sr-only">{label}</span>
-      </a>
+          {inner}
+        </Link>
+      )}
     </li>
   )
 }
 
 export default function Header() {
+  const pathname = usePathname()
+  const isHome = pathname === '/'
+  const { scrollTo } = useLenis()
   const [dark, setDark] = useState(false)
 
   useEffect(() => {
@@ -180,17 +210,31 @@ export default function Header() {
           aria-label="Primary navigation"
           className="flex items-center justify-between px-6 py-5 lg:px-10"
         >
-          <a
-            href="#"
-            aria-label="Xircons — back to top"
-            className={`font-clash text-lg font-700 leading-none tracking-tighter transition-colors duration-300 focus-visible:rounded focus-visible:outline-2 ${textColor} ${outlineColor}`}
-          >
-            XIRCONS
-          </a>
+          {isHome ? (
+            <a
+              href="#"
+              aria-label="Xircons — back to top"
+              onClick={(e) => {
+                e.preventDefault()
+                scrollTo('#main-content')
+              }}
+              className={`font-clash text-lg font-700 leading-none tracking-tighter transition-colors duration-300 focus-visible:rounded focus-visible:outline-2 ${textColor} ${outlineColor}`}
+            >
+              XIRCONS
+            </a>
+          ) : (
+            <Link
+              href="/"
+              aria-label="Xircons — home"
+              className={`font-clash text-lg font-700 leading-none tracking-tighter transition-colors duration-300 focus-visible:rounded focus-visible:outline-2 ${textColor} ${outlineColor}`}
+            >
+              XIRCONS
+            </Link>
+          )}
 
           <ul className="hidden items-center gap-10 md:flex" role="list">
-            {NAV_LINKS.map(({ label, href }) => (
-              <NavLink key={href} label={label} href={href} dark={dark} />
+            {NAV_LINKS.map(({ label, hash }) => (
+              <NavLink key={hash} label={label} hash={hash} dark={dark} isHome={isHome} />
             ))}
           </ul>
 

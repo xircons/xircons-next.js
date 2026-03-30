@@ -1,16 +1,46 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { getArrowMorphTransition, staggerContainer, fadeUp } from '@/lib/motion'
-import type { PortfolioProject } from '@/types/portfolio'
+import { CATEGORY_LABELS } from '@/data/project-categories'
+import type { PortfolioProject, ProjectCategory } from '@/types/portfolio'
 
 interface Props {
   projects: readonly PortfolioProject[]
 }
 
 const CARD_EASE = [0.22, 1, 0.36, 1] as const
+/** Minimum card height; grid rows stretch to match the tallest card in each row. */
+const CARD_MIN_H = 'min-h-[24rem] sm:min-h-[24rem]'
+/** One rhythm inside cards: padding from border + gaps between blocks (keep in sync with arrow `*-8`). */
+const CARD_PAD_GAP = 'p-8 gap-4' as const
+const CHIP_PAD = 'py-1' as const
+
+const CATEGORY_ORDER: ProjectCategory[] = [
+  'production',
+  'competition',
+  'academic',
+  'personal',
+]
+
+/** Runtime-safe: RSC/HMR or stale data can omit or mismatch `category`. */
+function normalizeProjectCategory(value: unknown): ProjectCategory {
+  if (typeof value === 'string' && value in CATEGORY_LABELS) {
+    return value as ProjectCategory
+  }
+  return 'personal'
+}
+
+function sortProjectsByCategory(projects: readonly PortfolioProject[]): PortfolioProject[] {
+  return [...projects].sort((a, b) => {
+    const ra = CATEGORY_ORDER.indexOf(normalizeProjectCategory(a.category))
+    const rb = CATEGORY_ORDER.indexOf(normalizeProjectCategory(b.category))
+    return ra - rb
+  })
+}
 
 function ProjectCard({ project, index }: { project: PortfolioProject; index: number }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -20,31 +50,42 @@ function ProjectCard({ project, index }: { project: PortfolioProject; index: num
 
   const paintTransition = reduced ? { duration: 0 } : { duration: 0.4, ease: CARD_EASE }
   const arrowTransition = getArrowMorphTransition(!!reduced)
+  const category = normalizeProjectCategory(project.category)
+  const categoryLabel = CATEGORY_LABELS[category]
 
   return (
-    <motion.div
-      ref={ref}
-      variants={reduced ? { hidden: {}, show: {} } : fadeUp}
-      initial="hidden"
-      animate={inView ? 'show' : 'hidden'}
-      className="h-full"
+    <Link
+      href={`/projects/${project.slug}`}
+      className={`block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-canvas ${CARD_MIN_H}`}
+      prefetch
     >
-      <motion.article
-        aria-labelledby={`project-title-${project.id}`}
-        onHoverStart={() => setHovered(true)}
-        onHoverEnd={() => setHovered(false)}
-        style={{ borderWidth: 1, borderStyle: 'solid' }}
-        animate={{
-          backgroundColor: hovered ? '#1a1a1a' : '#ffffff',
-          color: hovered ? '#ffffff' : '#1a1a1a',
-          borderColor: hovered ? 'rgba(255,255,255,0.35)' : '#1a1a1a',
-        }}
-        transition={paintTransition}
-        className="relative flex h-full flex-col justify-between overflow-hidden p-8"
+      <motion.div
+        ref={ref}
+        variants={reduced ? { hidden: {}, show: {} } : fadeUp}
+        initial="hidden"
+        animate={inView ? 'show' : 'hidden'}
+        className="h-full"
       >
-      {/* Index label */}
-      <span aria-hidden="true" className="mb-6 font-clash text-xs font-500 tracking-widest">
-        {String(index + 1).padStart(2, '0')}
+        <motion.article
+          aria-labelledby={`project-title-${project.id}`}
+          onHoverStart={() => setHovered(true)}
+          onHoverEnd={() => setHovered(false)}
+          style={{ borderWidth: 1, borderStyle: 'solid' }}
+          animate={{
+            backgroundColor: hovered ? '#1a1a1a' : '#ffffff',
+            color: hovered ? '#ffffff' : '#1a1a1a',
+            borderColor: hovered ? 'rgba(255,255,255,0.35)' : '#1a1a1a',
+          }}
+          transition={paintTransition}
+          className="relative flex h-full flex-col justify-between overflow-hidden p-8"
+        >
+      {/* Index label — matches Skills.tsx id style (00-1 …) */}
+      <span aria-hidden="true" className="font-mono text-[10px] uppercase tracking-[0.2em]">
+        {`00-${index + 1}`}
+      </span>
+
+      <span className="inline-flex w-fit bg-ink px-3 py-1 font-sans text-xs font-500 text-white">
+        {categoryLabel}
       </span>
 
       <h3
@@ -99,8 +140,9 @@ function ProjectCard({ project, index }: { project: PortfolioProject; index: num
           <ArrowRight className="size-[1.125rem]" strokeWidth={2} aria-hidden />
         </motion.span>
       </div>
-      </motion.article>
-    </motion.div>
+        </motion.article>
+      </motion.div>
+    </Link>
   )
 }
 
@@ -108,6 +150,7 @@ export default function Works({ projects }: Props) {
   const sectionRef = useRef<HTMLElement>(null)
   const inView = useInView(sectionRef, { once: true, margin: '-5% 0px' })
   const reduced = useReducedMotion()
+  const sortedProjects = useMemo(() => sortProjectsByCategory(projects), [projects])
 
   return (
     <section
@@ -146,7 +189,7 @@ export default function Works({ projects }: Props) {
           animate={inView ? 'show' : 'hidden'}
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {projects.map((project, i) => (
+          {sortedProjects.map((project, i) => (
             <ProjectCard key={project.id} project={project} index={i} />
           ))}
         </motion.div>

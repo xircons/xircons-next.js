@@ -263,7 +263,7 @@ export default function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer role="contentinfo" style={{ background: '#f2f2f2', color: '#1a1a1a' }}>
+    <footer role="contentinfo" style={{ background: '#ffffff', color: '#1a1a1a' }}>
 
       {/* ── MOBILE (<lg) — bracket externals → centered contact → meta ── */}
       <div className="lg:hidden">
