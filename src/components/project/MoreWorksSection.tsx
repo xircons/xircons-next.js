@@ -27,7 +27,7 @@ function MoreWorksThumb({
   const hasHero = heroSrc.length > 0
 
   return (
-    <li className="min-w-0">
+    <li className="min-w-0 max-md:snap-start max-md:w-[calc((100vw-2.5rem)/1.52)] max-md:max-w-[calc((100vw-2.5rem)/1.52)] max-md:shrink-0 md:w-auto">
       <Link
         href={`/projects/${p.slug}`}
         aria-label={`View ${p.title} project`}
@@ -49,7 +49,7 @@ function MoreWorksThumb({
         }}
       >
         <div
-          className="relative aspect-video w-full min-h-[4rem] overflow-hidden bg-neutral-200"
+          className="relative aspect-video w-full min-h-[4rem] overflow-hidden bg-canvas shadow-[0_4px_24px_rgba(26,26,26,0.1)] transition-shadow duration-300 group-hover:shadow-[0_0px_32px_rgba(26,26,26,0.14)]"
           onMouseEnter={(e) => {
             setHovered(true)
             setPointer({ x: e.clientX, y: e.clientY })
@@ -66,7 +66,7 @@ function MoreWorksThumb({
             src={p.heroImage}
             alt={hasHero ? p.title : ''}
             className="object-cover"
-            sizes="(max-width: 640px) 50vw, 20vw"
+            sizes="(max-width: 768px) 60vw, 20vw"
           />
 
           {/* Keyboard: same pill, centered (no cursor to follow) */}
@@ -111,14 +111,19 @@ export default function MoreWorksSection({ projects }: { projects: readonly Port
         <h2 id="more-works-heading" className="sr-only">
           More works
         </h2>
-        <ul
-          className="m-0 grid w-full list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 md:grid-cols-5 md:gap-4"
-          role="list"
+        <div
+          className="max-md:-mx-5 max-md:snap-x max-md:snap-mandatory max-md:overflow-x-auto max-md:overflow-y-hidden max-md:overscroll-x-contain max-md:scroll-pl-5 max-md:scroll-pr-5 max-md:pb-1 max-md:[-ms-overflow-style:none] max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:[display:none] md:mx-0 md:overflow-visible"
+          aria-label="More projects"
         >
-          {projects.map((p) => (
-            <MoreWorksThumb key={p.slug} project={p} router={router} />
-          ))}
-        </ul>
+          <ul
+            className="m-0 flex w-full list-none flex-nowrap gap-2 p-0 max-md:px-5 md:grid md:grid-cols-5 md:gap-4 md:px-0"
+            role="list"
+          >
+            {projects.map((p) => (
+              <MoreWorksThumb key={p.slug} project={p} router={router} />
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   )

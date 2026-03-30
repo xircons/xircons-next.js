@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ProjectHero from '@/components/project/ProjectHero'
 import ProjectCaseStudy from '@/components/project/ProjectCaseStudy'
@@ -37,7 +36,6 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <main id="main-content">
-      <Header />
       <ProjectHero project={project} />
       <ProjectCaseStudy project={project} />
       <MoreWorksSection projects={more} />

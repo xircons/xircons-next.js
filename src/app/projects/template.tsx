@@ -34,7 +34,7 @@ function scheduleScrollResets(scrollToTop: () => void) {
 export default function ProjectsTemplate({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const reduced = useReducedMotion() ?? false
-  const { scrollToTop } = useLenis()
+  const { scrollToTop, notifyScrollBoundsChanged } = useLenis()
   const [open, setOpen] = useState(reduced)
 
   useEffect(() => {
@@ -60,6 +60,14 @@ export default function ProjectsTemplate({ children }: { children: React.ReactNo
     }
   }, [pathname, reduced, scrollToTop])
 
+  /** Curtain + client navigations skip `window` `load`; refresh Lenis when content shows and after transition. */
+  useEffect(() => {
+    if (!open) return
+    notifyScrollBoundsChanged()
+    const id = window.setTimeout(notifyScrollBoundsChanged, reduced ? 0 : 2100)
+    return () => window.clearTimeout(id)
+  }, [open, reduced, pathname, notifyScrollBoundsChanged])
+
   const duration = reduced ? 2 : 2
 
   return (
@@ -80,7 +88,11 @@ export default function ProjectsTemplate({ children }: { children: React.ReactNo
         animate={{ y: open ? '100%' : '0%' }}
         transition={{ duration, ease: CURTAIN_EASE }}
       />
-      {children}
+      {/*
+        Stack page content above curtains (z-40). A fixed header inside <main> was painting
+        underneath sibling curtains because the whole main subtree sat below z-40.
+      */}
+      <div className="relative z-[41] min-h-0">{children}</div>
     </>
   )
 }

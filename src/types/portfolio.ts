@@ -29,6 +29,8 @@ export interface PortfolioProject {
   readonly role: string
   readonly completedAt: string
   readonly githubUrl: string
+  /** When true, hero shows "Private Repository" instead of a GitHub link. */
+  readonly githubPrivate?: boolean
   /** Omit or leave empty to show grey placeholder. */
   readonly heroImage?: string
   /** Long-form case study copy; each entry is a paragraph. */

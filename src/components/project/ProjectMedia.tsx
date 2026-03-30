@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useLenis } from '@/components/SmoothScrollProvider'
 
 type Props = {
   src?: string | null
@@ -9,6 +10,11 @@ type Props = {
   /** Unused; kept for API compatibility with former next/image usage */
   sizes?: string
   priority?: boolean
+  /**
+   * `fill` — absolute cover (thumbnails, legacy).
+   * `intrinsic` — natural aspect ratio, full width of container (hero, case study gallery).
+   */
+  variant?: 'fill' | 'intrinsic'
 }
 
 /**
@@ -20,7 +26,9 @@ export default function ProjectMedia({
   alt,
   className = '',
   priority,
+  variant = 'fill',
 }: Props) {
+  const { notifyScrollBoundsChanged } = useLenis()
   const [broken, setBroken] = useState(false)
   const resolved = typeof src === 'string' ? src.trim() : ''
   const hasSrc = resolved.length > 0
@@ -30,13 +38,41 @@ export default function ProjectMedia({
   }, [resolved])
 
   if (!hasSrc) {
+    if (variant === 'intrinsic') {
+      return (
+        <div className={`min-h-[12rem] w-full bg-neutral-200 ${className}`} aria-hidden />
+      )
+    }
     return (
       <div className={`absolute inset-0 bg-neutral-200 ${className}`} aria-hidden />
     )
   }
 
   if (broken) {
+    if (variant === 'intrinsic') {
+      return (
+        <div className={`min-h-[12rem] w-full bg-neutral-200 ${className}`} aria-hidden />
+      )
+    }
     return <div className={`absolute inset-0 bg-neutral-200 ${className}`} aria-hidden />
+  }
+
+  if (variant === 'intrinsic') {
+    return (
+      <img
+        src={resolved}
+        alt={alt}
+        className={`block h-auto max-w-full ${className}`}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        referrerPolicy="no-referrer"
+        onLoad={() => notifyScrollBoundsChanged()}
+        onError={() => {
+          setBroken(true)
+          notifyScrollBoundsChanged()
+        }}
+      />
+    )
   }
 
   return (
@@ -47,7 +83,11 @@ export default function ProjectMedia({
       loading={priority ? 'eager' : 'lazy'}
       decoding="async"
       referrerPolicy="no-referrer"
-      onError={() => setBroken(true)}
+      onLoad={() => notifyScrollBoundsChanged()}
+      onError={() => {
+        setBroken(true)
+        notifyScrollBoundsChanged()
+      }}
     />
   )
 }

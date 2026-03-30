@@ -6,11 +6,18 @@ import Lenis from 'lenis'
 interface LenisContextValue {
   scrollTo: (target: number | string | HTMLElement, opts?: { offset?: number }) => void
   scrollToTop: (opts?: { immediate?: boolean }) => void
+  /**
+   * Refresh scrollable height after layout changes (images, route).
+   * Uses dimensions-only remeasure so Lenis wheel smoothing is not reset
+   * (public `lenis.resize()` snaps animatedScroll and feels janky over galleries).
+   */
+  notifyScrollBoundsChanged: () => void
 }
 
 const LenisContext = createContext<LenisContextValue>({
   scrollTo: () => {},
   scrollToTop: () => {},
+  notifyScrollBoundsChanged: () => {},
 })
 
 export function useLenis() {
@@ -38,6 +45,10 @@ export default function SmoothScrollProvider({ children }: Props) {
     }
   }, [])
 
+  const notifyScrollBoundsChanged = useCallback(() => {
+    lenisRef.current?.dimensions.resize()
+  }, [])
+
   useEffect(() => {
     const prevRestoration =
       typeof history !== 'undefined' ? history.scrollRestoration : 'auto'
@@ -49,9 +60,14 @@ export default function SmoothScrollProvider({ children }: Props) {
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      // Sticky sidebars with overflow-y-auto (case study) must hand off wheel to the page.
+      allowNestedScroll: true,
     })
 
     lenisRef.current = lenis
+
+    const bumpScrollBounds = () => lenis.dimensions.resize()
+    window.addEventListener('load', bumpScrollBounds)
 
     let rafId: number
     function raf(time: number) {
@@ -61,6 +77,7 @@ export default function SmoothScrollProvider({ children }: Props) {
     rafId = requestAnimationFrame(raf)
 
     return () => {
+      window.removeEventListener('load', bumpScrollBounds)
       cancelAnimationFrame(rafId)
       lenis.destroy()
       lenisRef.current = null
@@ -71,7 +88,7 @@ export default function SmoothScrollProvider({ children }: Props) {
   }, [])
 
   return (
-    <LenisContext.Provider value={{ scrollTo, scrollToTop }}>
+    <LenisContext.Provider value={{ scrollTo, scrollToTop, notifyScrollBoundsChanged }}>
       {children}
     </LenisContext.Provider>
   )

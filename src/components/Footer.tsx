@@ -273,7 +273,7 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mx-auto h-px max-w-[calc(100%-2.5rem)] bg-ink/10" aria-hidden="true" />
+        {/* <div className="mx-auto h-px max-w-[calc(100%-2.5rem)] bg-ink/10" aria-hidden="true" /> */}
 
         <div className="flex flex-col items-center gap-3 px-5 py-12 text-center">
           <a

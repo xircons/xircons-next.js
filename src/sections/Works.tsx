@@ -84,7 +84,13 @@ function ProjectCard({ project, index }: { project: PortfolioProject; index: num
         {`00-${index + 1}`}
       </span>
 
-      <span className="inline-flex w-fit bg-ink px-3 py-1 font-sans text-xs font-500 text-white">
+      <span
+        className={`inline-flex w-fit border px-3 py-1 font-sans text-xs font-500 transition-colors duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          hovered
+            ? 'border-ink bg-white text-ink'
+            : 'border-transparent bg-ink text-white'
+        }`}
+      >
         {categoryLabel}
       </span>
 

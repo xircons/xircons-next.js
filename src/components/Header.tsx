@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { useLenis } from '@/components/SmoothScrollProvider'
+import { HOME_SECTION_STORAGE_KEY } from '@/lib/home-nav'
 import { getArrowMorphTransition } from '@/lib/motion'
 
 const NAV_LINKS = [
@@ -91,6 +92,7 @@ function NavLink({
   isHome: boolean
 }) {
   const [hovered, setHovered] = useState(false)
+  const router = useRouter()
   const { scrollTo } = useLenis()
   const href = `#${hash}`
 
@@ -142,7 +144,16 @@ function NavLink({
         </a>
       ) : (
         <Link
-          href={`/#${hash}`}
+          href="/"
+          onClick={(e) => {
+            e.preventDefault()
+            try {
+              sessionStorage.setItem(HOME_SECTION_STORAGE_KEY, hash)
+            } catch {
+              /* private / quota */
+            }
+            router.push('/', { scroll: false })
+          }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           className={commonClass}
@@ -204,7 +215,7 @@ export default function Header() {
         Skip to content
       </a>
 
-      <header role="banner" className="fixed left-0 right-0 top-0 z-50">
+      <header role="banner" className="fixed left-0 right-0 top-0 z-[100]">
         <nav
           role="navigation"
           aria-label="Primary navigation"
