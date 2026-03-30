@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Xircons — Web developer portfolio'
+export const alt = 'Wuttikan (Xircons) — web developer, Chiang Mai University'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -53,7 +53,7 @@ export default function OpenGraphImage() {
             opacity: 0.92,
           }}
         >
-          Crafting digital experiences — React, Next.js, motion.
+          Web developer and DII student at Chiang Mai University, Thailand.
         </div>
         <div
           style={{
