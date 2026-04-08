@@ -9,6 +9,7 @@ const FARM = 'react-farm-life-cycle'
 const STORE = 'store-atelien'
 const TTT = 'tic-tac-toe-with-ai'
 const HOSTEL = 'good-night-hostel'
+const ZERO_MOCK = 'zero-mock'
 
 /** Frames 01–24 and 26–29 (no 25.png on disk). */
 const GOOD_NIGHT_HOSTEL_FRAMES = [
@@ -23,6 +24,32 @@ export const portfolioData: PortfolioContent = {
       'Sawaddeekub, I am Wuttikan, a web developer and DII student at Chiang Mai University in Chiang Mai, Thailand. Explore my work here and on my repositories.',
   },
   works: [
+    {
+      id: 7,
+      slug: ZERO_MOCK,
+      title: 'Zero-mock',
+      subtitle: 'Solo project — end-to-end ownership',
+      category: 'production',
+      role: 'Full-stack developer',
+      completedAt: '2026',
+      githubUrl: 'https://github.com/xircons/zero-mock',
+      npmjsUrl: 'https://www.npmjs.com/package/@xirconsss/zero-mock',
+      heroImage: projectImage(ZERO_MOCK, 'hero.png'),
+      body: [
+        "I built **zero-mock** as a solo maintainer in a full-stack / tooling role. It is a zero-config Node.js CLI that turns a single JSON file into a local REST API: each top-level key becomes a collection, each value is an array of records, and the tool serves full CRUD with CORS and JSON bodies. The problem it solves is familiar to frontend teams: you need a believable backend for prototypes, demos, and integration tests without provisioning a database, writing routes by hand, or maintaining a bespoke mock server.",
+        "The main flow for developers is deliberately minimal: install or `npx` the package, point `-f` at a JSON file, optionally set `-p`, `-d` (simulated latency), or `-w` (reload on file change), then call standard REST endpoints from the browser or curl. Listing supports query filters and `_page` / `_limit` pagination so you can mimic list APIs without extra config. The experience is optimized for clarity—one file is the source of truth, the terminal logs each request as `[METHOD] path - status`, and writes persist atomically so rapid local iteration feels safe.",
+        "The stack is intentionally small: **TypeScript** (strict, CommonJS output), **Express** for HTTP, **cors** and **express.json()**, and **commander** for CLI flags—no extra runtime dependencies beyond those and Node built-ins. File I/O uses `fs/promises`; persistence uses a temp-file plus rename pattern with a serialized save queue so concurrent writes do not corrupt the JSON. **GitHub Actions** publishes to npm on push to `main`, with a guard to skip republishing an existing semver so CI stays reliable.",
+        "One tricky part was balancing **zero-config** with real-world needs: simulated delay, request logging, list filtering, pagination, and watch mode had to plug into a thin **CLI → singleton store → server** pipeline without introducing config files or new packages. Watch mode in particular needed to reload in-memory state on disk changes while swallowing invalid JSON during saves and keeping the last good snapshot—users should never lose the server mid-edit. Shipping to **npm** under a scoped package also surfaced real release friction (duplicate-version publishes); tightening the workflow so **push to main** drives releases and skipping already-published versions removed repeated E403 failures and made the maintainer story match the product story: simple for users, predictable in production."
+      ],
+      gallery: [
+        projectImage(ZERO_MOCK, '1.png'),
+        projectImage(ZERO_MOCK, '2.png'),
+        projectImage(ZERO_MOCK, '3.png'),
+        projectImage(ZERO_MOCK, '4.png'),
+      ] as NonEmptyArray<string>,
+      description: 'A zero-config Node.js CLI that instantly turns a single JSON file into a full CRUD REST API with CORS, pagination, and simulated latency for rapid frontend development.',
+      stack: ['TypeScript', 'Node.js', 'Express', 'npm', 'CLI'],
+    },
     {
       id: 2,
       slug: 'ninjalingo',

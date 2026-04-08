@@ -76,14 +76,26 @@ export default function ProjectHero({ project }: { project: PortfolioProject }) 
                 {project.githubPrivate ? (
                   <span className="normal-case">PRIVATE REPOSITORY</span>
                 ) : (
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline decoration-ink/30 underline-offset-2 transition-colors hover:decoration-ink"
-                  >
-                    GitHub
-                  </a>
+                  <div className="flex flex-col gap-1 normal-case">
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline decoration-ink/30 underline-offset-2 transition-colors hover:decoration-ink"
+                    >
+                      GitHub
+                    </a>
+                    {project.npmjsUrl ? (
+                      <a
+                        href={project.npmjsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline decoration-ink/30 underline-offset-2 transition-colors hover:decoration-ink"
+                      >
+                        npm
+                      </a>
+                    ) : null}
+                  </div>
                 )}
               </MetaCell>
             </div>

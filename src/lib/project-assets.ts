@@ -1,6 +1,9 @@
 /** Base URL path for files in `public/projects/`. */
 export const PROJECT_IMAGE_ROOT = '/projects' as const
 
+/** Shared placeholder for projects without dedicated assets yet (see `public/projects/placeholder.svg`). */
+export const PROJECT_PLACEHOLDER_IMAGE = `${PROJECT_IMAGE_ROOT}/placeholder.svg` as const
+
 const SLUG_TO_DIR: Readonly<Record<string, string>> = {
   'icas-cmu-hub': 'icas-cmu',
   'react-farm-life-cycle': 'reactfarmlifecycle',

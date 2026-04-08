@@ -87,7 +87,7 @@ function DesktopColumn({
                   style={{ fontSize: 'clamp(0.85rem, 1.5vw, 1.4rem)', letterSpacing: '-0.02em' }}
                 >
                   <motion.span animate={slashAnim} className="inline-block overflow-hidden">
-                    //
+                    {'//'}
                   </motion.span>
                   {skill.title}
                 </motion.span>
@@ -250,7 +250,7 @@ function MobileRow({
                   style={{ fontSize: 'clamp(0.9rem, 4vw, 1.1rem)', letterSpacing: '-0.02em' }}
                 >
                   <motion.span animate={slashAnim} className="inline-block overflow-hidden">
-                    //
+                    {'//'}
                   </motion.span>
                   {skill.title}
                 </motion.span>

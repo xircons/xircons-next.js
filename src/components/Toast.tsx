@@ -60,7 +60,9 @@ export function ToastContainer({ toasts, onDismiss }: {
   onDismiss: (id: string) => void
 }) {
   const [mounted, setMounted] = useState(false)
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    queueMicrotask(() => setMounted(true))
+  }, [])
   if (!mounted) return null
 
   return createPortal(
