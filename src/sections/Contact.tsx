@@ -102,8 +102,6 @@ const INPUT_STYLE = {
 }
 const INPUT_CLASS =
   'w-full border-0 bg-transparent pb-4 pt-2 font-mono text-sm text-canvas placeholder:text-white/40 placeholder:uppercase placeholder:tracking-[0.2em] placeholder:text-[11px] focus:outline-none disabled:cursor-not-allowed disabled:opacity-40'
-const LABEL_CLASS = 'block font-mono text-[10px] uppercase tracking-[0.25em] mb-1'
-const LABEL_STYLE = { color: 'rgba(255,255,255,0.6)' }
 
 export default function Contact() {
   const ref = useRef<HTMLElement>(null)

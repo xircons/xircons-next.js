@@ -32,7 +32,7 @@ export default async function ProjectPage({ params }: Props) {
   const project = getProjectBySlug(slug)
   if (!project) notFound()
 
-  const more = getOtherProjects(slug, 5)
+  const more = getOtherProjects(slug)
 
   return (
     <main id="main-content">

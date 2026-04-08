@@ -9,7 +9,8 @@ const CATEGORY_ORDER: ProjectCategory[] = [
   'personal',
 ]
 
-function normalizeProjectCategory(value: unknown): ProjectCategory {
+/** Runtime-safe: RSC/HMR or stale data can omit or mismatch `category`. */
+export function normalizeProjectCategory(value: unknown): ProjectCategory {
   if (typeof value === 'string' && value in CATEGORY_LABELS) {
     return value as ProjectCategory
   }
@@ -24,15 +25,29 @@ export function sortProjectsByCategory(projects: readonly PortfolioProject[]): P
   })
 }
 
+/**
+ * 1-based position in the full portfolio when sorted by category (production → personal).
+ * Same numbering on the home Works grid and on More works cards.
+ */
+export function getWorksOrdinal(projectSlug: string): number {
+  const sorted = sortProjectsByCategory(portfolioData.works)
+  const i = sorted.findIndex((p) => p.slug === projectSlug)
+  return i >= 0 ? i + 1 : 1
+}
+
 export function getProjectBySlug(slug: string): PortfolioProject | undefined {
   const project = portfolioData.works.find((p) => p.slug === slug)
   return project
 }
 
-export function getOtherProjects(excludeSlug: string, limit = 5): PortfolioProject[] {
+/**
+ * All portfolio projects except `excludeSlug`, ordered by category (production → personal).
+ * Pass `limit` only if you need to cap how many are returned.
+ */
+export function getOtherProjects(excludeSlug: string, limit?: number): PortfolioProject[] {
   const rest = portfolioData.works.filter((p) => p.slug !== excludeSlug)
-  const sorted = sortProjectsByCategory(rest).slice(0, limit)
-  return sorted
+  const sorted = sortProjectsByCategory(rest)
+  return limit !== undefined ? sorted.slice(0, limit) : sorted
 }
 
 export function getAllProjectSlugs(): string[] {

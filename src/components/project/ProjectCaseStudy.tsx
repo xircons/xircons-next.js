@@ -19,9 +19,9 @@ export default function ProjectCaseStudy({ project }: { project: PortfolioProjec
         </aside>
 
         <div className="flex min-w-0 w-full flex-col gap-6 bg-canvas md:w-[60%] md:shrink-0">
-          {project.gallery.map((src, i) => (
+          {project.gallery.map((src) => (
             <div
-              key={i}
+              key={src}
               className="relative w-full shrink-0 overflow-hidden bg-neutral-200"
             >
               <ProjectMedia

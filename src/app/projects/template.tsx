@@ -41,11 +41,10 @@ export default function ProjectsTemplate({ children }: { children: React.ReactNo
     const reset = () => scrollToTop({ immediate: true })
 
     if (reduced) {
-      setOpen(true)
       return scheduleScrollResets(reset)
     }
 
-    setOpen(false)
+    queueMicrotask(() => setOpen(false))
     const clearStagger = scheduleScrollResets(reset)
 
     const curtainRaf = requestAnimationFrame(() => {
