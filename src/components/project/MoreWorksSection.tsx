@@ -4,13 +4,22 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import ScrollRevealTitle from '@/components/ScrollRevealTitle'
 import { CompactWorksProjectCard } from '@/components/works/WorksProjectCard'
-import { getWorksOrdinal } from '@/lib/projects'
 import { staggerContainer } from '@/lib/motion'
 import type { PortfolioProject } from '@/types/portfolio'
 
 const LABEL = '/ MORE WORKS /'
 
-export default function MoreWorksSection({ projects }: { projects: readonly PortfolioProject[] }) {
+export type MoreWorkItem = {
+  project: PortfolioProject
+  /** 1-based index in category-sorted full works list (from server). */
+  worksOrdinal: number
+}
+
+export default function MoreWorksSection({
+  items,
+}: {
+  items: readonly MoreWorkItem[]
+}) {
   const gridRef = useRef<HTMLDivElement>(null)
   const gridInView = useInView(gridRef, { once: true, margin: '-5% 0px' })
 
@@ -32,11 +41,11 @@ export default function MoreWorksSection({ projects }: { projects: readonly Port
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
           aria-label="More projects"
         >
-          {projects.map((p) => (
+          {items.map(({ project: p, worksOrdinal }) => (
             <CompactWorksProjectCard
               key={p.slug}
               project={p}
-              worksOrdinal={getWorksOrdinal(p.slug)}
+              worksOrdinal={worksOrdinal}
             />
           ))}
         </motion.div>

@@ -4,7 +4,12 @@ import Footer from '@/components/Footer'
 import ProjectHero from '@/components/project/ProjectHero'
 import ProjectCaseStudy from '@/components/project/ProjectCaseStudy'
 import MoreWorksSection from '@/components/project/MoreWorksSection'
-import { getAllProjectSlugs, getOtherProjects, getProjectBySlug } from '@/lib/projects'
+import {
+  getAllProjectSlugs,
+  getOtherProjects,
+  getProjectBySlug,
+  getWorksOrdinal,
+} from '@/lib/projects'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -33,12 +38,16 @@ export default async function ProjectPage({ params }: Props) {
   if (!project) notFound()
 
   const more = getOtherProjects(slug)
+  const moreItems = more.map((p) => ({
+    project: p,
+    worksOrdinal: getWorksOrdinal(p.slug),
+  }))
 
   return (
     <main id="main-content">
       <ProjectHero project={project} />
       <ProjectCaseStudy project={project} />
-      <MoreWorksSection projects={more} />
+      <MoreWorksSection items={moreItems} />
       <Footer />
     </main>
   )

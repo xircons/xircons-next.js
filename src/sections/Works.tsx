@@ -3,7 +3,7 @@
 import { useMemo, useRef } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
 import { staggerContainer } from '@/lib/motion'
-import { getWorksOrdinal, sortProjectsByCategory } from '@/lib/projects'
+import { sortProjectsByCategory } from '@/lib/projects'
 import WorksProjectCard from '@/components/works/WorksProjectCard'
 import type { PortfolioProject } from '@/types/portfolio'
 
@@ -54,11 +54,11 @@ export default function Works({ projects }: Props) {
           animate={inView ? 'show' : 'hidden'}
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {sortedProjects.map((project) => (
+          {sortedProjects.map((project, i) => (
             <WorksProjectCard
               key={project.id}
               project={project}
-              worksOrdinal={getWorksOrdinal(project.slug)}
+              worksOrdinal={i + 1}
             />
           ))}
         </motion.div>
