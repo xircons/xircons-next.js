@@ -1,10 +1,8 @@
 'use client'
 
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
 import ScrollRevealTitle from '@/components/ScrollRevealTitle'
+import WorksPaginatedGrid from '@/components/works/WorksPaginatedGrid'
 import { CompactWorksProjectCard } from '@/components/works/WorksProjectCard'
-import { staggerContainer } from '@/lib/motion'
 import type { PortfolioProject } from '@/types/portfolio'
 
 const LABEL = '/ MORE WORKS /'
@@ -20,9 +18,6 @@ export default function MoreWorksSection({
 }: {
   items: readonly MoreWorkItem[]
 }) {
-  const gridRef = useRef<HTMLDivElement>(null)
-  const gridInView = useInView(gridRef, { once: true, margin: '-5% 0px' })
-
   return (
     <section className="bg-[#ffffff]" aria-labelledby="more-works-heading">
       <ScrollRevealTitle
@@ -33,22 +28,23 @@ export default function MoreWorksSection({
         <h2 id="more-works-heading" className="sr-only">
           More works
         </h2>
-        <motion.div
-          ref={gridRef}
-          variants={staggerContainer}
-          initial="hidden"
-          animate={gridInView ? 'show' : 'hidden'}
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-          aria-label="More projects"
-        >
-          {items.map(({ project: p, worksOrdinal }) => (
-            <CompactWorksProjectCard
-              key={p.slug}
-              project={p}
-              worksOrdinal={worksOrdinal}
-            />
-          ))}
-        </motion.div>
+        <WorksPaginatedGrid
+          items={items}
+          getItemKey={(item) => (item as MoreWorkItem).project.slug}
+          minHeightClass="min-h-[31rem] sm:min-h-[33rem]"
+          ariaLabel="More projects"
+          ringOffsetClass="ring-offset-[#ffffff]"
+          renderCard={(item, _index, { noEntrance }) => {
+            const { project, worksOrdinal } = item as MoreWorkItem
+            return (
+              <CompactWorksProjectCard
+                project={project}
+                worksOrdinal={worksOrdinal}
+                noEntrance={noEntrance}
+              />
+            )
+          }}
+        />
       </div>
     </section>
   )
