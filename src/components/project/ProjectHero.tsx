@@ -2,10 +2,51 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { CATEGORY_LABELS } from '@/data/project-categories'
+import { HOME_SECTION_STORAGE_KEY } from '@/lib/home-nav'
 import type { PortfolioProject } from '@/types/portfolio'
 import ProjectMedia from '@/components/project/ProjectMedia'
+
+const BACK_EASE = [0.22, 1, 0.36, 1] as const
+
+function ProjectBackLink() {
+  const router = useRouter()
+  const [hovered, setHovered] = useState(false)
+  const reduced = useReducedMotion()
+  const t = reduced ? { duration: 0 } : { duration: 0.4, ease: BACK_EASE }
+
+  return (
+    <Link
+      href="/"
+      onClick={(e) => {
+        e.preventDefault()
+        try {
+          sessionStorage.setItem(HOME_SECTION_STORAGE_KEY, 'works')
+        } catch {
+          /* private / quota */
+        }
+        router.push('/', { scroll: false })
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="relative mb-1 inline-flex w-fit items-center gap-1.5 pb-1 font-sans text-xs font-500 uppercase tracking-[0.15em] text-ink focus-visible:rounded focus-visible:outline-2 focus-visible:outline-ink"
+      aria-label="Back to works"
+    >
+      <ArrowLeft className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+      <span className="relative z-10">Back</span>
+      <motion.span
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 left-0 h-px w-full origin-left bg-ink"
+        initial={false}
+        animate={{ scaleX: hovered ? 1 : 0 }}
+        transition={t}
+      />
+    </Link>
+  )
+}
 
 function MetaCell({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -60,6 +101,7 @@ export default function ProjectHero({ project }: { project: PortfolioProject }) 
         >
           <div className="flex flex-col gap-12 md:contents">
             <div className="flex flex-col gap-3 text-left">
+              <ProjectBackLink />
               <h1 className="max-w-full font-clash text-[clamp(1.75rem,4.5vw,3.75rem)] font-700 leading-[1.08] tracking-tighter text-ink md:max-w-[22ch]">
                 {project.title}
               </h1>
@@ -102,16 +144,8 @@ export default function ProjectHero({ project }: { project: PortfolioProject }) 
           </div>
         </div>
 
-        {/* Right column: mobile back link above image; intrinsic image height drives row (md+ left matches via ResizeObserver) */}
+        {/* Right column: intrinsic image height drives row (md+ left matches via ResizeObserver) */}
         <div className="order-1 flex min-h-0 min-w-0 flex-col max-md:shrink-0 max-md:pt-4 md:order-2 md:flex-1 md:pt-0 md:text-left">
-          <Link
-            href="/"
-            className="mb-2 flex w-fit items-center gap-1 font-sans text-[10px] font-500 uppercase tracking-[0.18em] text-ink transition-colors duration-200 hover:text-ink focus-visible:rounded focus-visible:outline-2 focus-visible:outline-ink md:hidden"
-            aria-label="Back to home"
-          >
-            <ArrowLeft className="size-3 shrink-0" strokeWidth={2} aria-hidden />
-            back
-          </Link>
           <div ref={mediaWrapRef} className="min-h-0 min-w-0">
             <div className="relative w-full overflow-hidden bg-neutral-200">
               <ProjectMedia

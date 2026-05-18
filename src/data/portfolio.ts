@@ -10,6 +10,7 @@ const STORE = 'store-atelien'
 const TTT = 'tic-tac-toe-with-ai'
 const HOSTEL = 'good-night-hostel'
 const ZERO_MOCK = 'zero-mock'
+const GEO_CARE = 'geo-care-network'
 
 /** Frames 01–24 and 26–29 (no 25.png on disk). */
 const GOOD_NIGHT_HOSTEL_FRAMES = [
@@ -198,6 +199,38 @@ export const portfolioData: PortfolioContent = {
         'A booking website and staff dashboard I built for a hostel. Guests can look at rooms and switch languages, while staff can manage bookings, housekeeping, and view charts in their own admin area.',
       stack: ['HTML', 'CSS', 'JavaScript', 'Chart.js'],
     },
+    {
+      id: 8,
+      slug: GEO_CARE,
+      title: 'Geo Care Network',
+      subtitle: 'Team project — collaboration & scale',
+      category: 'academic',
+      role: 'Full-stack developer',
+      completedAt: '2026',
+      githubUrl: 'https://github.com/xircons/geo-care-network',
+      heroImage: projectImage(GEO_CARE, 'hero.png'),
+      body: [
+        'I built **Geo Care Network**, a web prototype for map-based incident reporting in a geographic care network, with sample data centered on Chiang Mai. It brings together a public-facing map and reports experience where residents can browse filed incidents, file or edit reports manually, and upload dashcam or CCTV footage for automated crash analysis, plus a separate agency notify workflow that behaves like a small triage console for CCTV-sourced cases. The main goal was to show how a community safety tool could combine live map awareness, structured incident records, and AI-assisted filing from video—without relying on a production backend for this version.',
+        'On the community side, I focused on a clear path from the live map through severity and category filters, report pins with quick actions, and dedicated screens for the full reports list and manual create or edit flows where users pick location on an interactive map. Opening new or edit forms from the map uses modal-style routing so the underlying map stays visible. The CCTV flow walks users from video upload and preview through AI analysis to an auto-filled report form with Thai title and description, optional GPS-derived coordinates, and a captured thumbnail. The agency side uses a notify queue with open and archived views, status transitions, and an append-only activity log, with badge counts on the top bar so staff can see how many CCTV reports still need triage. I used CSS custom properties, CSS Modules per screen, and shared typography including Geist so the look stays consistent, while Gemini output is intentionally casual spoken Thai to match how eyewitnesses would describe a crash.',
+        'The stack is **React 19** with **TypeScript** and **Vite**, **React Router** for multi-page navigation, and **Redux Toolkit** with **RTK Query** for server state. Report data is served by **zero-mock** from a local `db.json` file, which keeps REST-style GET, POST, PATCH, and DELETE behavior realistic during development. UI filters, search, and toast messaging live in a separate ui slice, with memoized selectors driving filtered lists on the map and reports views. **Leaflet** and react-leaflet power the map layers and location picker, OpenStreetMap Nominatim handles reverse geocoding when GPS metadata exists, and **Google Gemini** (`gemini-2.5-flash`) runs in the browser for multimodal video analysis. The live map and notify views poll on an interval so pins and queue state stay reasonably fresh without manual refresh.',
+        'A practical challenge was making CCTV analysis trustworthy and usable without a server pipeline: I had to enforce a maximum inline upload size for Gemini, run a three-pass ensemble with fixed seeds and aggregate votes so a single flaky pass would not miss a real crash, validate strict JSON fields before filing, and still handle clips with no embedded GPS by falling back to manual pin placement and optional Nominatim lookup. Passing modal state through React Router background locations kept edit and create flows from tearing users out of map context, while splitting reports API logic, CCTV analysis, GPS extraction, and reverse geocoding into focused feature modules next to co-located CSS Modules helped me avoid one oversized page file and made it easier to extend the triage console or tighten the AI contract independently.',
+      ],
+      gallery: projectGalleryFrames(
+        GEO_CARE,
+        Array.from({ length: 10 }, (_, i) => i + 1),
+      ) as NonEmptyArray<string>,
+      description:
+        'A Chiang Mai–focused map prototype for community incident reporting: browse and file reports on a live map, run CCTV footage through Gemini for auto-filled crash reports, and triage CCTV cases in a separate agency console—backed locally by zero-mock.',
+      stack: [
+        'React',
+        'TypeScript',
+        'Vite',
+        'Redux Toolkit',
+        'Leaflet',
+        'Gemini API',
+        'zero-mock',
+      ],
+    },
   ],
   skills: [
     {
@@ -264,6 +297,16 @@ export const portfolioData: PortfolioContent = {
         'CI & STATIC HOSTING',
         'DEPLOYMENT & HOSTING',
         'DEBUGGING & ITERATION',
+      ],
+    },
+    {
+      id: '00-6',
+      title: 'AI & ADVANCED LOGIC',
+      details: [
+        'LLM INTEGRATION (GEMINI)',
+        'PROMPT ENGINEERING',
+        'MINIMAX & Q-LEARNING',
+        'REINFORCEMENT LEARNING',
       ],
     },
   ],

@@ -32,9 +32,10 @@ const LAYOUT_FEATURED: CardLayoutTokens = {
   index: 'font-mono text-[10px] uppercase tracking-[0.2em]',
   categoryPad: 'px-3 py-1 text-xs',
   title:
-    'font-clash text-[clamp(1.4rem,3vw,2.5rem)] font-700 leading-tight tracking-tight',
-  description: 'mt-4 font-sans text-sm leading-relaxed',
-  stackWrap: 'mt-6 flex flex-wrap gap-2',
+    'line-clamp-2 font-clash text-[clamp(1.4rem,3vw,2.5rem)] font-700 leading-tight tracking-tight',
+  description:
+    'mt-4 max-h-[5.75rem] overflow-hidden font-sans text-sm leading-relaxed line-clamp-4',
+  stackWrap: 'mt-6 flex max-h-[4.5rem] flex-wrap gap-2 overflow-hidden',
   stackChip: 'border border-current px-3 py-1 font-sans text-xs font-500',
   arrowWrap:
     'pointer-events-none absolute right-8 top-8 flex h-8 w-8 items-center justify-center transform-gpu',
@@ -64,12 +65,19 @@ export type WorksProjectCardProps = {
   project: PortfolioProject
   /** 1-based index in category-sorted full works list (`00-${worksOrdinal}` label). */
   worksOrdinal: number
+  /**
+   * Skip the card's own y-axis entrance animation. Use when the parent
+   * already handles motion (e.g. inside a slide/carousel) so cards move
+   * purely on the parent's axis instead of stacking a diagonal reveal.
+   */
+  noEntrance?: boolean
 }
 
 function WorksProjectCardInner({
   project,
   worksOrdinal,
   layout,
+  noEntrance,
 }: WorksProjectCardProps & { layout: CardLayoutTokens }) {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-10% 0px' })
@@ -89,7 +97,7 @@ function WorksProjectCardInner({
     >
       <motion.div
         ref={ref}
-        variants={reduced ? { hidden: {}, show: {} } : fadeUp}
+        variants={reduced || noEntrance ? { hidden: {}, show: {} } : fadeUp}
         initial="hidden"
         animate={inView ? 'show' : 'hidden'}
         className="h-full"

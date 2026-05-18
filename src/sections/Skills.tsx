@@ -21,6 +21,8 @@ const DESCRIPTIONS: Record<string, string> = {
     'Structuring data so it is easy to store and retrieve. I have experience designing relational SQL databases for university projects as well as setting up quick NoSQL solutions.',
   '00-5':
     'Taking an idea and building it from start to finish. I enjoy combining the frontend and backend, figuring out how different parts communicate, and getting the final project live on the web.',
+  '00-6':
+    'Going beyond standard CRUD. I integrate large language model APIs, design effective prompts, and explore classic decision-making algorithms like minimax and Q-learning for projects that need adaptive logic.',
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -30,6 +32,7 @@ const DESCRIPTIONS: Record<string, string> = {
 function DesktopColumn({
   skill,
   index,
+  total,
   hovered,
   onEnter,
   onLeave,
@@ -38,6 +41,7 @@ function DesktopColumn({
 }: {
   skill: PortfolioSkill
   index: number
+  total: number
   hovered: boolean
   onEnter: () => void
   onLeave: () => void
@@ -99,7 +103,7 @@ function DesktopColumn({
                   exit={{ clipPath: 'inset(0% 0% 0% 100%)' }}
                   transition={reduced ? { duration: 0 } : { duration: 0.35, ease: EASE }}
                   className="font-clash font-700 leading-tight text-ink whitespace-nowrap"
-                  style={{ fontSize: 'clamp(0.85rem, 1.5vw, 1.4rem)', letterSpacing: '-0.02em' }}
+                  style={{ fontSize: 'clamp(0.7rem, 0.9vw, 0.95rem)', letterSpacing: '-0.02em' }}
                 >
                   {skill.title}
                 </motion.h3>
@@ -147,7 +151,7 @@ function DesktopColumn({
               {DESCRIPTIONS[skill.id]}
             </p>
             <span className="font-mono text-[10px] tabular-nums text-ink">
-              0{index + 1} / 05
+              {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
             </span>
           </div>
         </div>
@@ -179,6 +183,7 @@ function DesktopAccordion({ skills, reduced }: { skills: readonly PortfolioSkill
             key={skill.id}
             skill={skill}
             index={i}
+            total={skills.length}
             hovered={activeId === skill.id}
             onEnter={() => setActiveId(skill.id)}
             onLeave={() => setActiveId(null)}
@@ -198,6 +203,7 @@ function DesktopAccordion({ skills, reduced }: { skills: readonly PortfolioSkill
 function MobileRow({
   skill,
   index,
+  total,
   open,
   onToggle,
   reduced,
@@ -205,6 +211,7 @@ function MobileRow({
 }: {
   skill: PortfolioSkill
   index: number
+  total: number
   open: boolean
   onToggle: () => void
   reduced: boolean
@@ -310,7 +317,7 @@ function MobileRow({
             </p>
             <div className="flex items-center justify-between">
               <span className="font-mono text-[10px] tabular-nums text-ink">
-                0{index + 1} / 05
+                {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
               </span>
               <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink opacity-30">
                 tap to close
@@ -346,6 +353,7 @@ function MobileAccordion({ skills, reduced }: { skills: readonly PortfolioSkill[
             key={skill.id}
             skill={skill}
             index={i}
+            total={skills.length}
             open={activeId === skill.id}
             onToggle={() => setActiveId((prev) => (prev === skill.id ? null : skill.id))}
             reduced={reduced}

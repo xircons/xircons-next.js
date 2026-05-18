@@ -2,9 +2,9 @@
 
 import { useMemo, useRef } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
-import { staggerContainer } from '@/lib/motion'
 import { sortProjectsByCategory } from '@/lib/projects'
 import WorksProjectCard from '@/components/works/WorksProjectCard'
+import WorksPaginatedGrid from '@/components/works/WorksPaginatedGrid'
 import type { PortfolioProject } from '@/types/portfolio'
 
 interface Props {
@@ -29,7 +29,6 @@ export default function Works({ projects }: Props) {
         transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
         className="w-full"
       >
-        {/* Heading row */}
         <div className="mb-16 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="mb-4 flex items-center gap-4">
@@ -47,21 +46,19 @@ export default function Works({ projects }: Props) {
           </p>
         </div>
 
-        {/* Project grid */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={inView ? 'show' : 'hidden'}
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {sortedProjects.map((project, i) => (
+        <WorksPaginatedGrid
+          items={sortedProjects}
+          getItemKey={(project) => (project as PortfolioProject).id}
+          minHeightClass="min-h-[49rem]"
+          ariaLabel="Projects pagination"
+          renderCard={(project, index, { noEntrance }) => (
             <WorksProjectCard
-              key={project.id}
-              project={project}
-              worksOrdinal={i + 1}
+              project={project as PortfolioProject}
+              worksOrdinal={index + 1}
+              noEntrance={noEntrance}
             />
-          ))}
-        </motion.div>
+          )}
+        />
       </motion.div>
     </section>
   )
