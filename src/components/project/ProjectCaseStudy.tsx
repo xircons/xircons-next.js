@@ -15,7 +15,7 @@ export default function ProjectCaseStudy({ project }: { project: PortfolioProjec
                 {paragraph}
               </p>
             ))}
-          </div> 
+          </div>
         </aside>
 
         <div className="flex min-w-0 w-full flex-col gap-6 bg-canvas md:w-[60%] md:shrink-0">

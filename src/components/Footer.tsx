@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
-import { useLenis } from '@/components/SmoothScrollProvider'
+import FooterBrand from '@/components/FooterBrand'
+import { useHomeSectionNav } from '@/hooks/useHomeSectionNav'
 
 const NAV = [
   { label: 'ABOUT ME', href: '#about' },
@@ -92,23 +94,17 @@ function FooterSocialLink({ label, href }: { label: string; href: string }) {
 /** Bracketed in-page nav — same slide + `[ LABEL ]` style as header `NavLink`. */
 function FooterBracketNavLink({ label, href }: { label: string; href: string }) {
   const [hovered, setHovered] = useState(false)
-  const { scrollTo } = useLenis()
+  const { isHome, goToSection } = useHomeSectionNav()
 
   const slide = { rest: { y: '0%' }, hover: { y: '100%' } }
   const slideIn = { rest: { y: '-100%' }, hover: { y: '0%' } }
   const transition = { duration: 0.3, ease: 'easeInOut' as const }
 
-  return (
-    <a
-      href={href}
-      onClick={(e) => {
-        e.preventDefault()
-        scrollTo(href)
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="relative block overflow-hidden font-sans text-xs font-500 tracking-[0.15em] text-ink focus-visible:rounded focus-visible:outline-2 focus-visible:outline-ink"
-    >
+  const linkClass =
+    'relative z-10 block overflow-hidden py-0.5 font-sans text-xs font-500 tracking-[0.15em] text-ink focus-visible:rounded focus-visible:outline-2 focus-visible:outline-ink'
+
+  const inner = (
+    <>
       <motion.span
         aria-hidden="true"
         className="block"
@@ -126,7 +122,33 @@ function FooterBracketNavLink({ label, href }: { label: string; href: string }) 
         [ {label} ]
       </motion.span>
       <span className="sr-only">{label}</span>
-    </a>
+    </>
+  )
+
+  if (isHome) {
+    return (
+      <a
+        href={href}
+        onClick={(e) => goToSection(href, e)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className={linkClass}
+      >
+        {inner}
+      </a>
+    )
+  }
+
+  return (
+    <Link
+      href="/"
+      onClick={(e) => goToSection(href, e)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={linkClass}
+    >
+      {inner}
+    </Link>
   )
 }
 
@@ -192,6 +214,7 @@ function formatClock24h(timeZone: string, date: Date): string {
     timeZone,
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
     hour12: false,
   })
 }
@@ -214,10 +237,10 @@ function buildClockParts(date: Date): {
 }
 
 const FOOTER_CLOCK_PLACEHOLDER = {
-  line: `${FOOTER_CLOCK.locationLabel}: (--:--)`,
+  line: `${FOOTER_CLOCK.locationLabel}: (--:--:--)`,
   location: FOOTER_CLOCK.locationLabel,
   offset: 'GMT+7',
-  time: '--:--',
+  time: '--:--:--',
 } as const
 
 /**
@@ -294,6 +317,12 @@ export default function Footer() {
 
         <div className="mx-auto h-px max-w-[calc(100%-2.5rem)] bg-ink/10" aria-hidden="true" />
 
+        <div className="py-8">
+          <FooterBrand />
+        </div>
+
+        <div className="mx-auto h-px max-w-[calc(100%-2.5rem)] bg-ink/10" aria-hidden="true" />
+
         <div
           className="px-5 pt-8"
           style={{
@@ -352,7 +381,7 @@ export default function Footer() {
           className="flex items-start justify-between"
           style={{ padding: '0 40px 40px', gap: '32px' }}
         >
-          <nav aria-label="Footer navigation">
+          <nav aria-label="Footer navigation" className="relative z-10 shrink-0">
             <ul className="flex flex-col" style={{ gap: '6px' }} role="list">
               {NAV.map(({ label, href }) => (
                 <li key={href}>
@@ -385,18 +414,8 @@ export default function Footer() {
 
         <div style={{ height: '1px', background: '#1a1a1a', opacity: 0.1, margin: '0 40px' }} />
 
-        <div style={{ padding: '0 28px' }}>
-          <p
-            className="font-clash font-700 leading-none text-ink text-center"
-            style={{
-              fontSize: 'clamp(14vw, 16vw, 18vw)',
-              letterSpacing: '-0.035em',
-              lineHeight: 0.87,
-            }}
-            aria-label="XIRCONS"
-          >
-            XIRCONS
-          </p>
+        <div className="px-5 py-6 lg:px-7">
+          <FooterBrand />
         </div>
 
         <div style={{ height: '1px', background: '#1a1a1a', opacity: 0.1, margin: '0 40px' }} />

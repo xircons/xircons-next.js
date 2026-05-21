@@ -53,7 +53,11 @@ export default function WorksPaginationButton({
         transition={reduced ? { duration: 0 } : HOVER_SPRING}
         aria-hidden
       >
-        <Icon className="size-6 lg:size-7" strokeWidth={2} aria-hidden />
+        <Icon
+          className="size-6 stroke-[1.25] lg:size-7"
+          strokeWidth={2}
+          aria-hidden
+        />
       </motion.span>
     </motion.button>
   )

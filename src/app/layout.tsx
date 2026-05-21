@@ -3,6 +3,7 @@ import { Inter, IBM_Plex_Sans_Thai } from 'next/font/google'
 import localFont from 'next/font/local'
 import './globals.css'
 import SmoothScrollProvider from '@/components/SmoothScrollProvider'
+import PreloaderGate from '@/components/PreloaderGate'
 import CustomCursor from '@/components/CustomCursor'
 import StructuredData from '@/components/StructuredData'
 import { getMetadataBase, getSiteUrl } from '@/lib/site'
@@ -76,7 +77,7 @@ export default function RootLayout({
       <body className="min-h-full">
         <StructuredData />
         <SmoothScrollProvider>
-          {children}
+          <PreloaderGate>{children}</PreloaderGate>
         </SmoothScrollProvider>
         <CustomCursor />
       </body>

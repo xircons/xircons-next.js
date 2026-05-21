@@ -1,13 +1,11 @@
 'use client'
 
 import { useRef, useEffect, useState, useActionState } from 'react'
+import { motion, useScroll, useReducedMotion, type MotionValue } from 'framer-motion'
 import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-  type MotionValue,
-} from 'framer-motion'
+  ScrollRevealLetter,
+  SCROLL_REVEAL_OFFSET,
+} from '@/components/ScrollRevealLetter'
 import { ArrowRight } from 'lucide-react'
 import { submitContact, type ContactFormState } from '@/app/actions/contact'
 import { useToasts, ToastContainer } from '@/components/Toast'
@@ -18,35 +16,6 @@ const LINE_1 = 'GREAT PRODUCTS'
 const LINE_2 = 'GREAT COLLABORATION'
 const ALL_LETTERS = (LINE_1 + ' ' + LINE_2).split('')
 const TOTAL = ALL_LETTERS.length
-
-function MaskedLetter({
-  char,
-  index,
-  scrollYProgress,
-  reduced,
-}: {
-  char: string
-  index: number
-  scrollYProgress: MotionValue<number>
-  reduced: boolean
-}) {
-  const start = 0.05 + (index / TOTAL) * 0.5
-  const end = Math.min(start + 0.1, 0.92)
-
-  const y = useTransform(
-    scrollYProgress,
-    [0, start, end, 1],
-    reduced ? ['0%', '0%', '0%', '0%'] : ['-118%', '-118%', '0%', '0%'],
-  )
-
-  return (
-    <span className="inline-block overflow-hidden align-baseline">
-      <motion.span className="inline-block" style={{ y }}>
-        {char === ' ' ? '\u00A0' : char}
-      </motion.span>
-    </span>
-  )
-}
 
 /** One headline line: flex-wrap breaks between words only (letters stay inside each word). */
 function ContactHeadlineLine({
@@ -73,19 +42,21 @@ function ContactHeadlineLine({
       {words.map((word, wi) => (
         <span key={wi} className="inline-flex flex-nowrap">
           {wi > 0 ? (
-            <MaskedLetter
+            <ScrollRevealLetter
               key={`sp-${wi}`}
               char=" "
               index={idx++}
+              total={TOTAL}
               scrollYProgress={scrollYProgress}
               reduced={reduced}
             />
           ) : null}
           {word.split('').map((char, i) => (
-            <MaskedLetter
+            <ScrollRevealLetter
               key={`${wi}-${i}`}
               char={char}
               index={idx++}
+              total={TOTAL}
               scrollYProgress={scrollYProgress}
               reduced={reduced}
             />
@@ -109,7 +80,7 @@ export default function Contact() {
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ['start end', 'center start'],
+    offset: [...SCROLL_REVEAL_OFFSET],
   })
 
   const [state, formAction, isPending] = useActionState(submitContact, INITIAL_STATE)
