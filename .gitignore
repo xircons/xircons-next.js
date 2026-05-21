@@ -31,6 +31,9 @@
 # production
 /build
 
+# Hero video — 4K source only; ship hero.mp4 + hero-poster.jpg
+public/video/9806390-uhd_3840_2160_25fps.mp4
+
 # misc
 .DS_Store
 *.pem

@@ -3,14 +3,34 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion, type Variants } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { CATEGORY_LABELS } from '@/data/project-categories'
 import { HOME_SECTION_STORAGE_KEY } from '@/lib/home-nav'
+import { clipReveal, fadeUp, staggerContainer } from '@/lib/motion'
 import type { PortfolioProject } from '@/types/portfolio'
 import ProjectMedia from '@/components/project/ProjectMedia'
 
 const BACK_EASE = [0.22, 1, 0.36, 1] as const
+const HERO_STAGGER: Variants = {
+  ...staggerContainer,
+  show: {
+    transition: { staggerChildren: 0.1, delayChildren: 0.18 },
+  },
+}
+
+const HERO_IMAGE_REVEAL: Variants = {
+  hidden: { opacity: 0, x: 56 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.8,
+      ease: BACK_EASE,
+      delay: 0.28,
+    },
+  },
+}
 
 function ProjectBackLink() {
   const router = useRouter()
@@ -61,9 +81,28 @@ function MetaCell({ label, children }: { label: string; children: React.ReactNod
   )
 }
 
+function RevealBlock({
+  children,
+  variants = clipReveal,
+}: {
+  children: React.ReactNode
+  variants?: Variants
+}) {
+  return (
+    <div className="overflow-hidden py-[0.02em]">
+      <motion.div className="will-change-transform" variants={variants}>
+        {children}
+      </motion.div>
+    </div>
+  )
+}
+
 export default function ProjectHero({ project }: { project: PortfolioProject }) {
   const category = project.category in CATEGORY_LABELS ? project.category : 'personal'
   const categoryLabel = CATEGORY_LABELS[category]
+  const reduced = useReducedMotion() ?? false
+  const motionState = reduced ? 'show' : 'hidden'
+  const motionAnimate = 'show'
 
   const mediaWrapRef = useRef<HTMLDivElement>(null)
   const [mediaHeight, setMediaHeight] = useState<number | null>(null)
@@ -89,28 +128,40 @@ export default function ProjectHero({ project }: { project: PortfolioProject }) 
   }, [project.heroImage])
 
   const leftColumnStyle =
-    isMd && mediaHeight != null ? ({ height: mediaHeight } as const) : undefined
+    isMd && mediaHeight != null ? ({ minHeight: mediaHeight } as const) : undefined
 
   return (
     <section className="relative z-0 flex min-h-[95vh] flex-col justify-start overflow-hidden bg-canvas px-5 pt-28 pb-16 sm:pt-32 md:justify-center lg:px-10 lg:pt-36">
-      <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-12 md:h-auto md:flex-none md:flex-row md:items-stretch md:gap-10 lg:gap-16">
+      <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-12 md:h-auto md:flex-none md:flex-row md:items-start md:gap-10 lg:gap-16">
         {/* Mobile: title + metadata stacked at bottom of column; md+: contents wrapper + justify-between match image */}
-        <div
-          className="order-2 flex min-h-0 min-w-0 flex-col overflow-y-auto text-left max-md:flex-1 max-md:justify-end max-md:min-h-0 md:order-1 md:justify-between md:gap-8 md:w-[min(100%,26rem)] md:shrink-0 md:flex-none lg:w-[min(100%,28rem)]"
+        <motion.div
+          className="order-2 flex min-h-0 min-w-0 flex-col overflow-hidden text-left max-md:flex-1 max-md:justify-end max-md:min-h-0 md:order-1 md:justify-between md:gap-8 md:w-[min(100%,26rem)] md:shrink-0 md:flex-none lg:w-[min(100%,28rem)]"
           style={leftColumnStyle}
+          variants={HERO_STAGGER}
+          initial={motionState}
+          animate={motionAnimate}
         >
           <div className="flex flex-col gap-12 md:contents">
             <div className="flex flex-col gap-3 text-left">
-              <ProjectBackLink />
-              <h1 className="max-w-full font-clash text-[clamp(1.75rem,4.5vw,3.75rem)] font-700 leading-[1.08] tracking-tighter text-ink md:max-w-[22ch]">
-                {project.title}
-              </h1>
+              <RevealBlock>
+                <ProjectBackLink />
+              </RevealBlock>
+              <RevealBlock>
+                <h1 className="max-w-full font-clash text-[clamp(1.75rem,4.5vw,3.75rem)] font-700 leading-[1.08] tracking-tighter text-ink md:max-w-[22ch]">
+                  {project.title}
+                </h1>
+              </RevealBlock>
               {project.subtitle ? (
-                <p className="font-sans text-sm text-ink/60">{project.subtitle}</p>
+                <RevealBlock>
+                  <p className="font-sans text-sm text-ink/60">{project.subtitle}</p>
+                </RevealBlock>
               ) : null}
             </div>
 
-            <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-x-10">
+            <motion.div
+              className="grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-x-10"
+              variants={fadeUp}
+            >
               <MetaCell label="Category">{categoryLabel}</MetaCell>
               <MetaCell label="Date">{project.completedAt}</MetaCell>
               <MetaCell label="Role">{project.role}</MetaCell>
@@ -140,13 +191,18 @@ export default function ProjectHero({ project }: { project: PortfolioProject }) 
                   </div>
                 )}
               </MetaCell>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right column: intrinsic image height drives row (md+ left matches via ResizeObserver) */}
-        <div className="order-1 flex min-h-0 min-w-0 flex-col max-md:shrink-0 max-md:pt-4 md:order-2 md:flex-1 md:pt-0 md:text-left">
-          <div ref={mediaWrapRef} className="min-h-0 min-w-0">
+        <motion.div
+          className="order-1 flex min-h-0 min-w-0 flex-col max-md:shrink-0 max-md:pt-4 md:order-2 md:flex-1 md:pt-0 md:text-left"
+          variants={HERO_IMAGE_REVEAL}
+          initial={motionState}
+          animate={motionAnimate}
+        >
+          <div ref={mediaWrapRef} className="min-h-0 min-w-0 overflow-hidden">
             <div className="relative w-full overflow-hidden bg-neutral-200">
               <ProjectMedia
                 src={project.heroImage}
@@ -157,7 +213,7 @@ export default function ProjectHero({ project }: { project: PortfolioProject }) 
               />
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   )

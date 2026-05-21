@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { useLenis } from '@/components/SmoothScrollProvider'
-import { HOME_SECTION_STORAGE_KEY } from '@/lib/home-nav'
+import { useHomeSectionNav } from '@/hooks/useHomeSectionNav'
 import { getArrowMorphTransition } from '@/lib/motion'
 
 const NAV_LINKS = [
@@ -84,16 +84,13 @@ function NavLink({
   label,
   hash,
   dark,
-  isHome,
 }: {
   label: string
   hash: string
   dark: boolean
-  isHome: boolean
 }) {
   const [hovered, setHovered] = useState(false)
-  const router = useRouter()
-  const { scrollTo } = useLenis()
+  const { isHome, goToSection } = useHomeSectionNav()
   const href = `#${hash}`
 
   const slide   = { rest: { y: '0%' },    hover: { y: '100%' }  }
@@ -132,10 +129,7 @@ function NavLink({
       {isHome ? (
         <a
           href={href}
-          onClick={(e) => {
-            e.preventDefault()
-            scrollTo(href)
-          }}
+          onClick={(e) => goToSection(href, e)}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           className={commonClass}
@@ -145,15 +139,7 @@ function NavLink({
       ) : (
         <Link
           href="/"
-          onClick={(e) => {
-            e.preventDefault()
-            try {
-              sessionStorage.setItem(HOME_SECTION_STORAGE_KEY, hash)
-            } catch {
-              /* private / quota */
-            }
-            router.push('/', { scroll: false })
-          }}
+          onClick={(e) => goToSection(href, e)}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           className={commonClass}
@@ -245,7 +231,7 @@ export default function Header() {
 
           <ul className="hidden items-center gap-10 md:flex" role="list">
             {NAV_LINKS.map(({ label, hash }) => (
-              <NavLink key={hash} label={label} hash={hash} dark={dark} isHome={isHome} />
+              <NavLink key={hash} label={label} hash={hash} dark={dark} />
             ))}
           </ul>
 

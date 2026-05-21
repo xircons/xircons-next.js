@@ -45,7 +45,7 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <main id="main-content">
-      <ProjectHero project={project} />
+      <ProjectHero key={project.slug} project={project} />
       <ProjectCaseStudy project={project} />
       <MoreWorksSection items={moreItems} />
       <Footer />

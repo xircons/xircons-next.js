@@ -1,90 +1,47 @@
 'use client'
 
-import { useRef } from 'react'
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-  type MotionValue,
-} from 'framer-motion'
+import { motion } from 'framer-motion'
+import AsciiHoverLabel from '@/components/AsciiHoverLabel'
+import { ScrollRevealLetter } from '@/components/ScrollRevealLetter'
+import { useScrollRevealTitle } from '@/hooks/useScrollRevealTitle'
 
 const LABEL = '/ ABOUT ME /'
-
-function MaskedLetter({
-  char,
-  index,
-  total,
-  scrollYProgress,
-  reduced,
-}: {
-  char: string
-  index: number
-  total: number
-  scrollYProgress: MotionValue<number>
-  reduced: boolean
-}) {
-  const n = Math.max(total, 1)
-  const start = 0.08 + (index / n) * 0.5
-  const end = Math.min(start + 0.1, 0.96)
-
-  const y = useTransform(
-    scrollYProgress,
-    [0, start, end, 1],
-    reduced ? ['0%', '0%', '0%', '0%'] : ['-118%', '-118%', '0%', '0%'],
-  )
-
-  return (
-    <span className="inline-block overflow-hidden align-baseline">
-      <motion.span className="inline-block" style={{ y }}>
-        {char === ' ' ? '\u00A0' : char}
-      </motion.span>
-    </span>
-  )
-}
+const TITLE_FADE_STYLE = { transition: 'opacity 320ms ease-out' } as const
 
 export default function HeroTransition() {
-  const ref = useRef<HTMLDivElement>(null)
-  const reduced = useReducedMotion() ?? false
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'end start'],
-  })
-
-  const blockY = useTransform(
-    scrollYProgress,
-    [0, 0.12, 0.28, 1],
-    reduced ? ['0%', '0%', '0%', '0%'] : ['-48%', '-22%', '0%', '0%'],
-  )
-
+  const { ref, scrollYProgress, blockY, reduced } = useScrollRevealTitle()
   const letters = LABEL.split('')
 
   return (
     <div
       ref={ref}
-      className="relative -mt-px overflow-hidden border-t-2 border-ink bg-canvas"
+      className="relative -mt-px overflow-x-hidden overflow-y-visible bg-canvas"
     >
       <motion.div
         className="flex min-h-[20vh] w-full items-center justify-center px-4 py-6 sm:min-h-[32vh] sm:py-10"
         style={{ y: blockY }}
       >
         <span className="sr-only">{LABEL}</span>
-        <h2
-          aria-hidden="true"
-          className="inline-flex max-w-full flex-nowrap justify-center font-clash font-700 leading-none tracking-[-0.03em] text-ink"
-          style={{ fontSize: 'clamp(1rem, 9vw, 15rem)' }}
-        >
-          {letters.map((char, i) => (
-            <MaskedLetter
-              key={i}
-              char={char}
-              index={i}
-              total={letters.length}
-              scrollYProgress={scrollYProgress}
-              reduced={reduced}
-            />
-          ))}
+        <h2 aria-hidden="true" className="m-0 p-0">
+          <AsciiHoverLabel
+            label={LABEL}
+            hideCursor
+            measureClassName="inline-flex max-w-full flex-nowrap justify-center font-clash font-700 leading-none tracking-[-0.03em] text-ink"
+            measureStyle={{ fontSize: 'clamp(1rem, 9vw, 15rem)' }}
+            renderLetter={(char, i, plainOpacity) => (
+              <ScrollRevealLetter
+                key={`${char}-${i}`}
+                char={char}
+                index={i}
+                total={letters.length}
+                scrollYProgress={scrollYProgress}
+                reduced={reduced}
+                plainOpacity={plainOpacity}
+                brandChar
+                fadeStyle={reduced ? undefined : TITLE_FADE_STYLE}
+              />
+            )}
+          />
         </h2>
       </motion.div>
     </div>

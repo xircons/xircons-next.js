@@ -70,24 +70,3 @@ body {
     cursor: none !important;
   }
 }
-
-/* ─────────────────────────────────────────────────────────────────────────
-   Marquee animation
-   The track (.marquee-track) contains two identical lists + equal spacers.
-   Shifting by -50 % moves exactly one list-width, then CSS resets to 0 —
-   creating a pixel-perfect circular loop with no jump.
-   ───────────────────────────────────────────────────────────────────────── */
-@keyframes marquee-left {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-.marquee-track {
-  animation: marquee-left 40s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track {
-    animation: none;
-  }
-}

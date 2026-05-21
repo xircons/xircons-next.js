@@ -16,6 +16,7 @@ export default function Works({ projects }: Props) {
   const inView = useInView(sectionRef, { once: true, margin: '-5% 0px' })
   const reduced = useReducedMotion()
   const sortedProjects = useMemo(() => sortProjectsByCategory(projects), [projects])
+  const projectCount = sortedProjects.length
 
   return (
     <section
@@ -29,21 +30,17 @@ export default function Works({ projects }: Props) {
         transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
         className="w-full"
       >
-        <div className="mb-16 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <div className="mb-4 flex items-center gap-4">
-              <span className="h-px w-12 bg-ink" />
-              <span className="font-sans text-xs font-500 uppercase tracking-[0.25em] text-ink">
-                Selected works
-              </span>
-            </div>
-            <h2 className="font-clash text-[clamp(2.5rem,6vw,6rem)] font-700 leading-[1] tracking-tighter text-ink">
-              PROJECTS
-            </h2>
+        <div className="mb-16">
+          <div className="mb-4 flex items-center gap-4">
+            <span className="h-px w-12 bg-ink" />
+            <span className="font-sans text-xs font-500 uppercase tracking-[0.25em] text-ink">
+              Selected works
+            </span>
           </div>
-          <p className="max-w-sm font-mono text-sm leading-relaxed tracking-wide text-ink">
-            Selected works demonstrating end-to-end development.
-          </p>
+          <h2 className="flex flex-wrap items-baseline justify-between gap-4 font-clash text-[clamp(2.5rem,6vw,6rem)] font-700 leading-[1] tracking-tighter text-ink">
+            <span>PROJECTS</span>
+            <span aria-label={`${projectCount} projects`}>({projectCount})</span>
+          </h2>
         </div>
 
         <WorksPaginatedGrid
