@@ -29,6 +29,8 @@ export interface PortfolioProject {
   readonly role: string
   readonly completedAt: string
   readonly githubUrl: string
+  /** When set, matching URL in `body` copy is rendered as an external link. */
+  readonly liveUrl?: string
   /** When set, project hero shows an npm package link alongside GitHub. */
   readonly npmjsUrl?: string
   /** When true, hero shows "Private Repository" instead of a GitHub link. */

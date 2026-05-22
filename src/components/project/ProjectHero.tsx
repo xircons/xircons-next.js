@@ -11,6 +11,9 @@ import { clipReveal, fadeUp, staggerContainer } from '@/lib/motion'
 import type { PortfolioProject } from '@/types/portfolio'
 import ProjectMedia from '@/components/project/ProjectMedia'
 
+const CODEBASE_LINK_CLASS =
+  'underline decoration-ink/30 underline-offset-2 transition-colors hover:decoration-ink'
+
 const BACK_EASE = [0.22, 1, 0.36, 1] as const
 const HERO_STAGGER: Variants = {
   ...staggerContainer,
@@ -174,7 +177,7 @@ export default function ProjectHero({ project }: { project: PortfolioProject }) 
                       href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline decoration-ink/30 underline-offset-2 transition-colors hover:decoration-ink"
+                      className={CODEBASE_LINK_CLASS}
                     >
                       GitHub
                     </a>
@@ -183,9 +186,19 @@ export default function ProjectHero({ project }: { project: PortfolioProject }) 
                         href={project.npmjsUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="underline decoration-ink/30 underline-offset-2 transition-colors hover:decoration-ink"
+                        className={CODEBASE_LINK_CLASS}
                       >
                         npm
+                      </a>
+                    ) : null}
+                    {project.liveUrl ? (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={CODEBASE_LINK_CLASS}
+                      >
+                        Live site
                       </a>
                     ) : null}
                   </div>
