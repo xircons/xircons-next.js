@@ -48,6 +48,9 @@ export const metadata: Metadata = {
   creator: siteSeo.person.name,
   robots: { index: true, follow: true },
   alternates: { canonical: '/' },
+  applicationName: siteSeo.siteName,
+  category: 'technology',
+  formatDetection: { telephone: false, address: false, email: false },
   openGraph: {
     title: siteSeo.title,
     description: siteSeo.ogDescription,
