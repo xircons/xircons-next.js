@@ -19,7 +19,14 @@ export default function MoreWorksSection({
   items: readonly MoreWorkItem[]
 }) {
   return (
-    <section className="bg-[#ffffff]" aria-labelledby="more-works-heading">
+    <section
+      className="bg-[#ffffff]"
+      aria-labelledby="more-works-heading"
+      // data-nosnippet tells Google not to use this block's text in SERP
+      // snippets — prevents other project pages from cannibalizing each
+      // other's queries via the cross-linked "More works" cards.
+      data-nosnippet
+    >
       <ScrollRevealTitle
         label={LABEL}
         className="relative -mt-px overflow-x-auto overflow-y-hidden bg-[#ffffff]"
