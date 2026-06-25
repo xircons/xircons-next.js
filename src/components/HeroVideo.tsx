@@ -11,6 +11,21 @@ export default function HeroVideo() {
     const video = videoRef.current
     if (!video) return
 
+    // Pick a lighter source on small screens / save-data connections to cut
+    // mobile load time, then let the browser stream it (faststart-encoded).
+    const isMobile = window.matchMedia('(max-width: 768px)').matches
+    type NavWithData = Navigator & { connection?: { saveData?: boolean } }
+    const saveData = (navigator as NavWithData).connection?.saveData === true
+    const canWebm =
+      !isMobile && video.canPlayType('video/webm; codecs="vp9"') !== ''
+
+    video.src = canWebm
+      ? HERO_VIDEO.webm
+      : isMobile || saveData
+        ? HERO_VIDEO.mobileMp4
+        : HERO_VIDEO.mp4
+    video.load()
+
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
     const sync = () => {
       if (mq.matches) {
@@ -29,7 +44,6 @@ export default function HeroVideo() {
       <video
         ref={videoRef}
         className="block h-full w-full border-0 object-cover outline-none motion-reduce:hidden"
-        src={HERO_VIDEO.mp4}
         poster={HERO_VIDEO.poster}
         loop
         muted
